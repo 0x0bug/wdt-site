@@ -1,0 +1,55 @@
+name: Verify bootstrap synchronization
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Checkout canonical bootstrap from WDT main
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: 0x0bug/windows-diagnostics-toolkit
+          ref: main
+          path: wdt-source
+          persist-credentials: false
+
+      - name: Compare bootstrap content without executing it
+        shell: pwsh
+        run: |
+          $canonicalPath = Join-Path $PWD 'wdt-source/scripts/bootstrap/run.ps1'
+          $publishedPath = Join-Path $PWD 'run.ps1'
+          foreach ($path in @($canonicalPath, $publishedPath)) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+              throw "Bootstrap is missing: $path"
+            }
+          }
+
+          $canonicalHash = (Get-FileHash -LiteralPath $canonicalPath -Algorithm SHA256).Hash
+          $publishedHash = (Get-FileHash -LiteralPath $publishedPath -Algorithm SHA256).Hash
+          if ([string]::Equals($canonicalHash, $publishedHash, [System.StringComparison]::OrdinalIgnoreCase)) {
+            Write-Host "Bootstrap files are byte-for-byte equal: $($canonicalHash.ToLowerInvariant())"
+            exit 0
+          }
+
+          $canonicalText = (Get-Content -LiteralPath $canonicalPath -Raw).Replace("`r`n", "`n").Replace("`r", "`n")
+          $publishedText = (Get-Content -LiteralPath $publishedPath -Raw).Replace("`r`n", "`n").Replace("`r", "`n")
+          if ($canonicalText -cne $publishedText) {
+            throw 'Published run.ps1 differs from the canonical bootstrap beyond CRLF/LF line endings.'
+          }
+
+          Write-Host 'Bootstrap content matches after CRLF/LF normalization.'
