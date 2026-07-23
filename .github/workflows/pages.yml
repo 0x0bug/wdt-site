@@ -15,6 +15,7 @@ on:
       - 'assets/**'
       - 'cases/**'
       - 'scripts/Prepare-PagesArtifact.ps1'
+      - 'tests/bootstrap-sync.tests.ps1'
       - 'tests/site-assets.tests.ps1'
       - 'tests/site-seo.tests.ps1'
   workflow_dispatch:
@@ -43,8 +44,34 @@ jobs:
         shell: pwsh
         run: ./tests/site-assets.tests.ps1
 
+  verify-bootstrap:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Checkout canonical bootstrap from WDT main
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: 0x0bug/windows-diagnostics-toolkit
+          ref: main
+          path: wdt-source
+          persist-credentials: false
+
+      - name: Verify byte-for-byte bootstrap synchronization
+        shell: pwsh
+        run: >-
+          ./tests/bootstrap-sync.tests.ps1
+          -PublishedPath ./run.ps1
+          -CanonicalPath ./wdt-source/scripts/bootstrap/run.ps1
+
   package:
-    needs: validate
+    needs: [validate, verify-bootstrap]
     permissions:
       contents: read
       pages: write

@@ -6,6 +6,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * *'
 
 permissions:
   contents: read
@@ -30,26 +32,24 @@ jobs:
 
       - name: Compare bootstrap content without executing it
         shell: pwsh
-        run: |
-          $canonicalPath = Join-Path $PWD 'wdt-source/scripts/bootstrap/run.ps1'
-          $publishedPath = Join-Path $PWD 'run.ps1'
-          foreach ($path in @($canonicalPath, $publishedPath)) {
-            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
-              throw "Bootstrap is missing: $path"
-            }
-          }
+        run: >-
+          ./tests/bootstrap-sync.tests.ps1
+          -PublishedPath ./run.ps1
+          -CanonicalPath ./wdt-source/scripts/bootstrap/run.ps1
 
-          $canonicalHash = (Get-FileHash -LiteralPath $canonicalPath -Algorithm SHA256).Hash
-          $publishedHash = (Get-FileHash -LiteralPath $publishedPath -Algorithm SHA256).Hash
-          if ([string]::Equals($canonicalHash, $publishedHash, [System.StringComparison]::OrdinalIgnoreCase)) {
-            Write-Host "Bootstrap files are byte-for-byte equal: $($canonicalHash.ToLowerInvariant())"
-            exit 0
-          }
+  static-tests:
+    runs-on: ubuntu-latest
 
-          $canonicalText = (Get-Content -LiteralPath $canonicalPath -Raw).Replace("`r`n", "`n").Replace("`r", "`n")
-          $publishedText = (Get-Content -LiteralPath $publishedPath -Raw).Replace("`r`n", "`n").Replace("`r", "`n")
-          if ($canonicalText -cne $publishedText) {
-            throw 'Published run.ps1 differs from the canonical bootstrap beyond CRLF/LF line endings.'
-          }
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
 
-          Write-Host 'Bootstrap content matches after CRLF/LF normalization.'
+      - name: Validate SEO and local references
+        shell: pwsh
+        run: ./tests/site-seo.tests.ps1
+
+      - name: Validate site assets and release-readiness policy
+        shell: pwsh
+        run: ./tests/site-assets.tests.ps1
