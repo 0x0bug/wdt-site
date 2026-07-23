@@ -250,7 +250,8 @@
         <p class="section-intro">The planned <code>v0.1.0-beta</code> publication will add a one-line bootstrap that downloads a fixed GitHub Release ZIP and verifies its SHA-256 checksum before execution. Until publication, use the clone workflow. The bootstrap still requires trust in the file delivered through GitHub Pages.</p>
       </div>
       <div class="terminal command-terminal" aria-label="PowerShell quick start command">
-        <div class="terminal-bar"><span>PowerShell</span><button class="copy-button" type="button" data-copy-target="quick-command">COPY</button></div>
+        <div class="terminal-bar"><span>PowerShell</span><button class="copy-button" type="button" data-copy-target="quick-command" data-copy-status="copy-status" aria-label="Copy PowerShell command">COPY</button></div>
+        <span id="copy-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></span>
         <pre id="quick-command"><code><span class="ps-prompt">PS&gt;</span> git clone https://github.com/0x0bug/windows-diagnostics-toolkit.git
 <span class="ps-prompt">PS&gt;</span> cd windows-diagnostics-toolkit
 <span class="ps-prompt">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1</code></pre>
