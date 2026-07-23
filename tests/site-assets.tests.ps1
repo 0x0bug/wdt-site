@@ -153,6 +153,7 @@ try {
     Assert-True ($verifyBootstrapJob -match '(?m)^\s*repository:\s*0x0bug/windows-diagnostics-toolkit\s*$') 'verify-bootstrap must checkout the WDT repository.'
     Assert-True ($verifyBootstrapJob -match '(?m)^\s*ref:\s*main\s*$') 'verify-bootstrap must compare against WDT main.'
     Assert-True ($packageJob -match '(?m)^    needs:\s*\[\s*validate\s*,\s*verify-bootstrap\s*\]\s*$') 'package must depend on validate and verify-bootstrap.'
+    Assert-True ($packageJob -match '(?m)^    if:\s*github\.ref\s*==\s*[''"]refs/heads/main[''"]\s*$') 'package must be restricted to the main branch.'
     Assert-True ($deployJob -match '(?m)^    needs:\s*package\s*$') 'deploy must depend only on package.'
 
     $workflowFiles = @(Get-ChildItem -LiteralPath (Join-Path $repositoryRoot '.github\workflows') -File | Where-Object { $_.Extension -in @('.yml', '.yaml') })

@@ -1,6 +1,21 @@
 name: Deploy project website
 
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/pages.yml'
+      - '.nojekyll'
+      - '404.html'
+      - 'index.html'
+      - 'robots.txt'
+      - 'run.ps1'
+      - 'sitemap.xml'
+      - 'assets/**'
+      - 'cases/**'
+      - 'scripts/Prepare-PagesArtifact.ps1'
+      - 'tests/bootstrap-sync.tests.ps1'
+      - 'tests/site-assets.tests.ps1'
+      - 'tests/site-seo.tests.ps1'
   push:
     branches:
       - main
@@ -72,6 +87,7 @@ jobs:
 
   package:
     needs: [validate, verify-bootstrap]
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       pages: write
