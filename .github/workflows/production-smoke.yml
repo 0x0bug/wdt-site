@@ -1,0 +1,33 @@
+name: Monitor production website
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '43 4 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Checkout canonical bootstrap from WDT main
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: 0x0bug/windows-diagnostics-toolkit
+          ref: main
+          path: wdt-source
+          persist-credentials: false
+
+      - name: Check production availability, metadata, TLS, and bootstrap
+        shell: pwsh
+        run: >-
+          ./tests/production-smoke.tests.ps1
+          -CanonicalBootstrapPath ./wdt-source/scripts/bootstrap/run.ps1
