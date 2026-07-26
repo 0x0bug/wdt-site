@@ -158,8 +158,14 @@ foreach ($file in $htmlFiles) {
             Add-TestIssue "$relativePath is missing a canonical URL."
         }
         else {
-            if (-not $canonical.StartsWith($publishedBaseUrl, [System.StringComparison]::OrdinalIgnoreCase)) {
-                Add-TestIssue "$relativePath canonical is outside the published site: $canonical"
+            try {
+                $canonicalUri = [uri]$canonical
+                if (-not $canonicalUri.IsAbsoluteUri -or $canonicalUri.Scheme -cne 'https' -or $canonicalUri.Host -cne 'wdt.digital') {
+                    Add-TestIssue "$relativePath canonical is outside the published site: $canonical"
+                }
+            }
+            catch {
+                Add-TestIssue "$relativePath canonical is invalid: $canonical"
             }
             if ($canonicalOwners.ContainsKey($canonical)) {
                 Add-TestIssue "$relativePath duplicates the canonical used by $($canonicalOwners[$canonical])."
@@ -218,16 +224,42 @@ if (-not (Test-Path -LiteralPath $sitemapPath -PathType Leaf)) {
 }
 else {
     try {
-        [xml]$sitemap = Get-Content -LiteralPath $sitemapPath -Raw
+        $sitemapText = Get-Content -LiteralPath $sitemapPath -Raw
+        [xml]$sitemap = $sitemapText
         $sitemapUrls = @($sitemap.urlset.url | ForEach-Object { [string]$_.loc })
+        if ($sitemapUrls.Count -ne 10) {
+            Add-TestIssue "sitemap.xml contains $($sitemapUrls.Count) URLs; expected exactly 10."
+        }
+        if (@($sitemapUrls | Select-Object -Unique).Count -ne $sitemapUrls.Count) {
+            Add-TestIssue 'sitemap.xml contains duplicate URLs.'
+        }
+        if ($sitemapText -match '(?i)<lastmod\b') {
+            Add-TestIssue 'sitemap.xml must omit lastmod until meaningful content dates can be maintained automatically.'
+        }
+        if ($sitemapText -match '0x0bug\.github\.io' -or $sitemapText -match '/windows-diagnostics-toolkit/') {
+            Add-TestIssue 'sitemap.xml contains a legacy Pages host or project path.'
+        }
+
         foreach ($canonical in $indexableCanonicals) {
             if ($canonical -notin $sitemapUrls) {
                 Add-TestIssue "Canonical URL is missing from sitemap.xml: $canonical"
             }
         }
+        foreach ($sitemapUrl in $sitemapUrls) {
+            if ($sitemapUrl -notin $indexableCanonicals) {
+                Add-TestIssue "sitemap.xml contains a URL without a matching canonical page: $sitemapUrl"
+            }
+        }
 
         foreach ($url in $sitemapUrls) {
-            if (-not $url.StartsWith($publishedBaseUrl, [System.StringComparison]::OrdinalIgnoreCase)) {
+            try {
+                $sitemapUri = [uri]$url
+            }
+            catch {
+                Add-TestIssue "Sitemap URL is invalid: $url"
+                continue
+            }
+            if (-not $sitemapUri.IsAbsoluteUri -or $sitemapUri.Scheme -cne 'https' -or $sitemapUri.Host -cne 'wdt.digital') {
                 Add-TestIssue "Sitemap URL is outside the published site: $url"
                 continue
             }

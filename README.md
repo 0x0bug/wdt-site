@@ -1,9 +1,45 @@
 # Windows Diagnostics Toolkit website
 
-Static website for [Windows Diagnostics Toolkit](https://github.com/0x0bug/windows-diagnostics-toolkit).
+This repository contains the standalone static website for [Windows Diagnostics Toolkit (WDT)](https://github.com/0x0bug/windows-diagnostics-toolkit).
 
-The production domain is `https://wdt.digital/`. During repository migration, GitHub Pages is staged on the repository's standard project-site URL before any custom-domain switch.
+Production: [https://wdt.digital/](https://wdt.digital/)
 
 ## Bootstrap ownership
 
-The canonical bootstrap is `scripts/bootstrap/run.ps1` in `0x0bug/windows-diagnostics-toolkit`. This repository publishes a copy at `/run.ps1`; CI compares it with the canonical file from the current WDT `main` branch without executing either script.
+The canonical bootstrap is [`scripts/bootstrap/run.ps1`](https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/scripts/bootstrap/run.ps1) in the main WDT repository. This website publishes a copy as `run.ps1`.
+
+Do not edit `run.ps1` manually. Synchronize it from the canonical WDT bootstrap. The Pages deployment gate compares the two files byte for byte and prevents publication when their SHA-256 hashes differ.
+
+## Repository structure
+
+- Root HTML files contain the homepage and fallback page.
+- `assets/` contains the dependency-free CSS, JavaScript, and images.
+- `cases/` contains the case index and diagnostic articles.
+- `tests/` contains static site, artifact, bootstrap, and production smoke tests.
+- `.github/workflows/` contains validation, drift monitoring, production monitoring, and Pages deployment workflows.
+- `run.ps1` is the published copy of the canonical WDT bootstrap.
+
+## Local checks
+
+Run the dependency-free static checks with PowerShell:
+
+```powershell
+pwsh -NoProfile -File ./tests/site-seo.tests.ps1
+pwsh -NoProfile -File ./tests/site-assets.tests.ps1
+```
+
+To preview the site locally:
+
+```console
+python -m http.server 8000
+```
+
+Then open `http://localhost:8000/`.
+
+## Line endings
+
+PowerShell files are stored and checked out with LF line endings (`.gitattributes`: `*.ps1 text eol=lf`). This keeps the byte-for-byte bootstrap SHA-256 comparison identical on Windows checkouts with `core.autocrlf=true`.
+
+## License
+
+The website source is available under the [MIT License](LICENSE).
