@@ -128,6 +128,11 @@ try {
         $html = Get-Content -LiteralPath $htmlFile.FullName -Raw
         Assert-True ($html -notmatch '(?i)\b(?:href|src)=["'']/') "Root-relative reference breaks project-site staging: $($htmlFile.FullName)"
         Assert-True ($html -notmatch '0x0bug\.github\.io/windows-diagnostics-toolkit') "Legacy project-site URL remains: $($htmlFile.FullName)"
+        Assert-True ($html -notmatch '(?i)support\.js|text/x-dc|#/guides') "Prototype runtime or hash routing remains: $($htmlFile.FullName)"
+        Assert-True ($html -notmatch '(?i)fonts\.(?:googleapis|gstatic)\.com') "External font CDN remains: $($htmlFile.FullName)"
+        Assert-True ($html -match '(?i)<link\s+[^>]*rel=["'']icon["''][^>]*>') "Favicon link is missing: $($htmlFile.FullName)"
+        Assert-True ($html -match '(?i)<button\s+[^>]*class=["''][^"'']*(?:wnav-toggle|nav-toggle)[^"'']*["''][^>]*aria-expanded=["'']false["'']') "Accessible mobile menu toggle is missing: $($htmlFile.FullName)"
+        Assert-True ($html -match '(?i)<script\s+[^>]*src=["''][^"'']*assets/site\.js["''][^>]*defer') "Shared interaction script is missing: $($htmlFile.FullName)"
     }
 
     foreach ($relativePath in $requiredAssets) {
@@ -173,8 +178,22 @@ try {
     Assert-True ($siteJavaScript -notmatch '\.innerHTML\s*=') 'Copy feedback must not use innerHTML.'
     Assert-True ($siteJavaScript -match 'copied to the clipboard') 'Copy success is not announced.'
     Assert-True ($siteJavaScript -match 'Clipboard access failed') 'Copy fallback is not announced.'
+    foreach ($articlePath in @($expectedArtifactPaths | Where-Object { $_ -like 'cases/windows-*.html' })) {
+        $articleHtml = Get-Content -LiteralPath (Join-Path $repositoryRoot $articlePath) -Raw
+        Assert-True ($articleHtml -match '(?i)<button[^>]+data-copy-(?:text|target)=["''][^"'']+["''][^>]+data-copy-status=["''][^"'']+["'']') "Article command copy control is missing: $articlePath"
+    }
+    Assert-True ($indexHtml -match [regex]::Escape('Interactive simulation based on the current WDT terminal interface. Nothing runs on your PC.')) 'TUI simulation disclosure is missing.'
+    Assert-True ($indexHtml -match 'data-tui-module' -and $indexHtml -match 'data-tui-option' -and $indexHtml -match 'data-tui-action=["'']run["'']') 'Interactive TUI controls are missing.'
+    foreach ($state in @('QUEUED', 'RUNNING', '[OK]', '[WARN]', '[ERROR]')) {
+        Assert-True ($indexHtml -match [regex]::Escape($state) -or $siteJavaScript -match [regex]::Escape($state)) "TUI state is missing: $state"
+    }
+    Assert-True ($siteJavaScript -match 'prefers-reduced-motion') 'Reduced-motion behavior is missing from JavaScript.'
+    Assert-True ($siteJavaScript -match "event\.key\s*-eq\s*'Escape'|event\.key\s*===\s*'Escape'") 'Escape-key handling is missing.'
+    Assert-True ($siteJavaScript -match 'restoreFocus') 'Mobile menu focus restoration is missing.'
 
     $styleSheet = Get-Content -LiteralPath (Join-Path $repositoryRoot 'assets\style.css') -Raw
+    Assert-True ($styleSheet -match '@media\s*\(prefers-reduced-motion:\s*reduce\)') 'Reduced-motion CSS is missing.'
+    Assert-True ($styleSheet -match '--accent:\s*#46e08a') 'Approved green accent token is missing.'
     $dimMatch = [regex]::Match($styleSheet, '--dim:\s*(#[0-9a-fA-F]{6})')
     Assert-True ($dimMatch.Success) 'CSS --dim color is missing or is not a six-digit hex value.'
     $dimColor = $dimMatch.Groups[1].Value
