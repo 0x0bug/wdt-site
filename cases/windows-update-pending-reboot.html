@@ -6,9 +6,11 @@
   <title>Check Windows Update Pending Reboot Indicators | WDT</title>
   <meta name="description" content="Check Windows Update history, pending reboot indicators and update-related service state with a local read-only PowerShell diagnostic report.">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
-  <meta name="theme-color" content="#0a0f18">
+  <meta name="theme-color" content="#05080b">
   <link rel="canonical" href="https://wdt.digital/cases/windows-update-pending-reboot.html">
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="icon" href="../assets/social-preview.svg" type="image/svg+xml">
+  <script src="../assets/site.js" defer></script>
 
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Windows Diagnostics Toolkit">
@@ -53,12 +55,13 @@
   }
   </script>
 </head>
-<body>
+<body class="route-in">
 <a class="skip-link" href="#main-content">Skip to content</a>
-<header>
-  <nav class="wrap" aria-label="Primary navigation">
-    <a class="brand" href="../">Windows Diagnostics Toolkit</a>
-    <div class="nav-links"><a href="./">Guides</a><a href="../#checks">Checks</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub</a></div>
+<header class="hdr" data-open="0">
+  <nav class="hdr-in" aria-label="Primary navigation">
+    <a class="brand" href="../" aria-label="Windows Diagnostics Toolkit home"><span class="brand-mark" aria-hidden="true">WDT</span><span class="brand-name">Windows Diagnostics Toolkit</span></a>
+    <button class="wnav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">≡</button>
+    <div class="wnav" id="site-nav"><a href="../">Home</a><a href="./">Guides</a><a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub ↗</a></div>
   </nav>
 </header>
 <main id="main-content">
@@ -72,8 +75,8 @@
     <div class="toc"><strong>On this page</strong><ul><li><a href="#command">Command to run</a></li><li><a href="#checks">Update evidence collected</a></li><li><a href="#interpretation">How to interpret reboot indicators</a></li><li><a href="#limits">Limits and next steps</a></li></ul></div>
 
     <h2 id="command">Run the Windows Update diagnostic</h2>
-    <pre><code>pwsh -NoProfile -File .\Invoke-WindowsDiagnostics.ps1 `
-  -Updates -PrivacyMode -ExportMarkdown</code></pre>
+    <div class="panel article-command"><div class="panel-hd"><span class="ttl">PowerShell</span><span class="end"><button type="button" class="wbtn wbtn--mini" data-copy-target="article-command" data-copy-status="article-copy-status" aria-label="Copy the PowerShell command">COPY</button></span></div><pre class="mono-block" id="article-command"><code>pwsh -NoProfile -File .\Invoke-WindowsDiagnostics.ps1 `
+  -Updates -PrivacyMode -ExportMarkdown</code></pre></div><span id="article-copy-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></span>
     <p>For optional recent update-related Event Log entries, run the standalone module:</p>
     <pre><code>pwsh -NoProfile -File .\scripts\windows-update-check.ps1 `
   -IncludeEventLog -SinceDays 14 -MaxEvents 20</code></pre>
