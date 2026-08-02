@@ -67,6 +67,19 @@ function Get-WorkflowJobBlock {
     return $match.Value
 }
 
+function Get-TagAttribute {
+    param(
+        [Parameter(Mandatory = $true)][string]$Tag,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    $match = [regex]::Match($Tag, ('(?i)\b{0}=["'']([^"'']+)["'']' -f [regex]::Escape($Name)))
+    if (-not $match.Success) {
+        return $null
+    }
+    return $match.Groups[1].Value
+}
+
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $prepareScript = Join-Path $repositoryRoot 'scripts\Prepare-PagesArtifact.ps1'
 $temporaryRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('wdt-site-assets-' + [System.Guid]::NewGuid().ToString('N'))
@@ -140,7 +153,20 @@ try {
         Assert-True ($asset.Length -gt 0) "Asset is empty: $relativePath"
     }
 
-    [xml](Get-Content -LiteralPath (Join-Path $repositoryRoot 'assets\social-preview.svg') -Raw) | Out-Null
+    $socialPreviewSvg = Get-Content -LiteralPath (Join-Path $repositoryRoot 'assets\social-preview.svg') -Raw
+    [xml]$socialPreviewSvg | Out-Null
+    Assert-True ($socialPreviewSvg -notmatch '\[x\]\s+PRIVATE\b') 'Social preview SVG still contains the misleading [x] PRIVATE claim.'
+    Assert-True ($socialPreviewSvg -match '\[x\]\s+PRIVACY MODE\b') 'Social preview SVG is missing the approved [x] PRIVACY MODE wording.'
+
+    $socialPreviewPng = [System.IO.File]::ReadAllBytes((Join-Path $repositoryRoot 'assets\social-preview.png'))
+    $pngSignature = [byte[]](137, 80, 78, 71, 13, 10, 26, 10)
+    Assert-True ($socialPreviewPng.Length -gt 24) 'Social preview PNG is too small to contain a valid PNG header.'
+    for ($index = 0; $index -lt $pngSignature.Length; $index++) {
+        Assert-True ($socialPreviewPng[$index] -eq $pngSignature[$index]) 'assets/social-preview.png does not have a PNG signature.'
+    }
+    $pngWidth = ([int64]$socialPreviewPng[16] * 16777216) + ([int64]$socialPreviewPng[17] * 65536) + ([int64]$socialPreviewPng[18] * 256) + $socialPreviewPng[19]
+    $pngHeight = ([int64]$socialPreviewPng[20] * 16777216) + ([int64]$socialPreviewPng[21] * 65536) + ([int64]$socialPreviewPng[22] * 256) + $socialPreviewPng[23]
+    Assert-True ($pngWidth -eq 1280 -and $pngHeight -eq 640) "Social preview PNG dimensions are ${pngWidth}x${pngHeight}; expected 1280x640."
     Assert-True ((Get-Item -LiteralPath (Join-Path $repositoryRoot 'run.ps1')).Length -gt 0) 'Published run.ps1 is empty.'
 
     $pagesWorkflowPath = Join-Path $repositoryRoot '.github\workflows\pages.yml'
@@ -220,7 +246,47 @@ try {
     Assert-True ($siteJavaScript -match "event\.key\s*-eq\s*'Escape'|event\.key\s*===\s*'Escape'") 'Escape-key handling is missing.'
     Assert-True ($siteJavaScript -match 'restoreFocus') 'Mobile menu focus restoration is missing.'
 
+    Assert-True ($indexHtml -match 'navigate\s+[^<]*Space / Enter toggle') 'Visible module keyboard hint does not describe the supported toggle keys.'
+    Assert-True ($indexHtml -match 'A all\s+[^<]*R recommended\s+[^<]*Enter on Run') 'Visible TUI shortcut hint does not describe the implemented actions.'
+    foreach ($key in @('ArrowUp', 'ArrowDown', "event.key.toLowerCase() === 'a'", "event.key.toLowerCase() === 'r'")) {
+        Assert-True ($siteJavaScript -match [regex]::Escape($key)) "TUI keyboard hint advertises an unimplemented key: $key"
+    }
+    Assert-True ($siteJavaScript -match 'setModuleTabStop') 'TUI module list is missing roving-tabindex behavior.'
+    $moduleTags = @([regex]::Matches($indexHtml, '(?i)<button\b[^>]*\bdata-tui-module=["''][^"'']+["''][^>]*>'))
+    Assert-True ($moduleTags.Count -eq 10) "Expected 10 TUI module buttons; found $($moduleTags.Count)."
+    Assert-True (@($moduleTags | Where-Object { $_.Value -match '(?i)\btabindex=["'']0["'']' }).Count -eq 1) 'TUI module roving tabindex must expose exactly one initial tab stop.'
+    Assert-True (@($moduleTags | Where-Object { $_.Value -match '(?i)\btabindex=["'']-1["'']' }).Count -eq 9) 'All non-active TUI module buttons must start outside the tab order.'
+
+    $tabTags = @([regex]::Matches($indexHtml, '(?i)<button\b[^>]*\bdata-tui-tab=["''][^"'']+["''][^>]*>'))
+    $panelTags = @([regex]::Matches($indexHtml, '(?i)<div\b[^>]*\bdata-panel=["''][^"'']+["''][^>]*>'))
+    Assert-True ($tabTags.Count -eq 3 -and $panelTags.Count -eq 3) 'TUI must contain exactly three tabs and three panels.'
+    $documentIds = @([regex]::Matches($indexHtml, '(?i)\bid=["'']([^"'']+)["'']') | ForEach-Object { $_.Groups[1].Value })
+    Assert-True (@($documentIds | Select-Object -Unique).Count -eq $documentIds.Count) 'Homepage contains duplicate id values.'
+    foreach ($tabMatch in $tabTags) {
+        $tabId = Get-TagAttribute -Tag $tabMatch.Value -Name 'id'
+        $panelId = Get-TagAttribute -Tag $tabMatch.Value -Name 'aria-controls'
+        Assert-True (-not [string]::IsNullOrWhiteSpace($tabId) -and -not [string]::IsNullOrWhiteSpace($panelId)) 'Every TUI tab must have an id and aria-controls.'
+        $matchingPanels = @($panelTags | Where-Object { (Get-TagAttribute -Tag $_.Value -Name 'id') -eq $panelId })
+        Assert-True ($matchingPanels.Count -eq 1) "Tab $tabId does not control exactly one panel: $panelId"
+        Assert-True ((Get-TagAttribute -Tag $matchingPanels[0].Value -Name 'aria-labelledby') -eq $tabId) "Panel $panelId is not labelled by tab $tabId."
+    }
+    Assert-True ($indexHtml -notmatch '(?i)\brole=["''](?:tablist|tab|tabpanel)["'']') 'Desktop source HTML must not expose inactive tab roles.'
+    foreach ($role in @('tablist', 'tab', 'tabpanel')) {
+        Assert-True ($siteJavaScript -match [regex]::Escape("setAttribute('role', '$role')")) "Mobile adaptive logic does not apply role=$role."
+    }
+    Assert-True ($siteJavaScript -match "removeAttribute\('role'\)" -and $siteJavaScript -match 'compactTui\.addEventListener') 'Desktop/mobile resize logic does not remove obsolete tab roles.'
+
+    $observerRegistration = $siteJavaScript.IndexOf('revealObserver.observe(element)', [System.StringComparison]::Ordinal)
+    $motionOptIn = $siteJavaScript.IndexOf("classList.add('wdt-motion')", [System.StringComparison]::Ordinal)
+    Assert-True ($observerRegistration -ge 0 -and $motionOptIn -gt $observerRegistration) 'Motion must opt in only after the IntersectionObserver owns all reveal targets.'
+    Assert-True ($siteJavaScript -match "classList.remove\('wdt-motion'\)") 'Motion initialization errors must restore the fail-visible state.'
+    Assert-True ($siteJavaScript -notmatch '2400') 'A reveal watchdog must not be the primary content-visibility mechanism.'
+
     $styleSheet = Get-Content -LiteralPath (Join-Path $repositoryRoot 'assets\style.css') -Raw
+    Assert-True ($styleSheet -notmatch '(?s)\[data-reveal=["'']scroll["'']\][^{]*\{[^}]*opacity\s*:\s*0') 'CSS hides unrevealed scroll content before IntersectionObserver callbacks.'
+    Assert-True ($styleSheet -notmatch '(?s)\[data-seq=["'']wait["'']\][^{]*\{[^}]*opacity\s*:\s*0') 'CSS hides the hero sequence before JavaScript starts it.'
+    Assert-True ($styleSheet -notmatch '(?s)@keyframes\s+revealIn\s*\{[^}]*opacity\s*:\s*0') 'Reveal motion must remain visible if a background tab pauses its animation.'
+    Assert-True ($styleSheet -notmatch '(?m)^\s*\+\s*$') 'Stylesheet contains a stray standalone + token.'
     Assert-True ($styleSheet -match '@media\s*\(prefers-reduced-motion:\s*reduce\)') 'Reduced-motion CSS is missing.'
     Assert-True ($styleSheet -match '--accent:\s*#46e08a') 'Approved green accent token is missing.'
     $dimMatch = [regex]::Match($styleSheet, '--dim:\s*(#[0-9a-fA-F]{6})')
@@ -229,6 +295,16 @@ try {
     foreach ($background in @('#000000', '#070909', '#0c1010', '#111616')) {
         $ratio = Get-ContrastRatio -Foreground $dimColor -Background $background
         Assert-True ($ratio -ge 4.5) "--dim $dimColor has contrast $($ratio.ToString('0.000')):1 on $background; expected at least 4.5:1."
+    }
+
+    $guidesIndexHtml = Get-Content -LiteralPath (Join-Path $repositoryRoot 'cases\index.html') -Raw
+    Assert-True ($guidesIndexHtml -match '(?is)<nav\b[^>]*aria-label=["'']Breadcrumb["''][^>]*>\s*<ol\b') 'Guides breadcrumb must be a named navigation landmark containing a list.'
+    Assert-True ($guidesIndexHtml -match '(?i)aria-current=["'']page["'']') 'Guides breadcrumb must identify the current page.'
+
+    foreach ($htmlFile in @($htmlFiles | Where-Object { $_.Name -ne '404.html' })) {
+        $metadataHtml = Get-Content -LiteralPath $htmlFile.FullName -Raw
+        Assert-True ($metadataHtml -match '(?i)<meta\s+[^>]*property=["'']og:image["''][^>]*content=["'']https://wdt\.digital/assets/social-preview\.png["'']') "og:image does not reference the current social preview: $($htmlFile.FullName)"
+        Assert-True ($metadataHtml -match '(?i)<meta\s+[^>]*name=["'']twitter:image["''][^>]*content=["'']https://wdt\.digital/assets/social-preview\.png["'']') "twitter:image does not reference the current social preview: $($htmlFile.FullName)"
     }
 }
 finally {
