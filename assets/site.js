@@ -140,6 +140,10 @@
     const tabsContainer = terminal.querySelector('[data-tui-tabs]');
     const tabs = [...terminal.querySelectorAll('[data-tui-tab]')];
     const panels = [...terminal.querySelectorAll('[data-panel]')];
+    const panelByTab = new Map(tabs.map((tab) => [
+      tab,
+      document.getElementById(tab.getAttribute('aria-controls'))
+    ]));
     const countLabels = [...terminal.querySelectorAll('[data-tui-count]')];
     const phaseLabel = terminal.querySelector('[data-tui-phase]');
     const progressLabel = terminal.querySelector('[data-tui-progress]');
@@ -197,11 +201,13 @@
       }
     };
 
+    const isCompactLayout = () => terminal.dataset.layout === 'compact';
+
     const setTab = (name, focus = false) => {
       terminal.setAttribute('data-tab', name);
       tabs.forEach((tab) => {
         const active = tab.dataset.tuiTab === name;
-        if (compactTui.matches) {
+        if (isCompactLayout()) {
           tab.setAttribute('aria-selected', String(active));
           tab.tabIndex = active ? 0 : -1;
         }
@@ -210,12 +216,36 @@
         }
       });
       panels.forEach((panel) => {
-        panel.hidden = compactTui.matches && panel.dataset.panel !== name;
+        panel.hidden = isCompactLayout() && panel.dataset.panel !== name;
       });
     };
 
+    const focusPanel = (panel) => {
+      if (!panel) {
+        return;
+      }
+      const hadTabIndex = panel.hasAttribute('tabindex');
+      if (!hadTabIndex) {
+        panel.tabIndex = -1;
+        panel.addEventListener('blur', () => panel.removeAttribute('tabindex'), { once: true });
+      }
+      panel.focus();
+    };
+
     const syncTabSemantics = () => {
+      const wasCompact = isCompactLayout();
       const compact = compactTui.matches;
+      const activeElement = document.activeElement;
+      const activeTab = tabs.find((tab) => tab.dataset.tuiTab === terminal.dataset.tab) || tabs[0];
+      const activePanel = panelByTab.get(activeTab);
+      const focusInTabs = Boolean(activeElement && tabsContainer?.contains(activeElement));
+      const focusOnTransferredPanel = Boolean(!wasCompact && activeElement === activePanel);
+
+      if (wasCompact && !compact && focusInTabs) {
+        focusPanel(activePanel);
+      }
+
+      terminal.dataset.layout = compact ? 'compact' : 'wide';
       terminal.dataset.tabsReady = 'true';
       if (compact) {
         tabsContainer?.setAttribute('role', 'tablist');
@@ -242,8 +272,8 @@
         }
       });
       setTab(terminal.dataset.tab || 'checks');
-      if (!compact && tabs.includes(document.activeElement)) {
-        (moduleRows.find((row) => row.tabIndex === 0) || moduleRows[0])?.focus();
+      if (!wasCompact && compact && focusOnTransferredPanel) {
+        activeTab?.focus();
       }
     };
 
