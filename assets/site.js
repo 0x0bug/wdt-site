@@ -137,6 +137,7 @@
   if (terminal) {
     const moduleRows = [...terminal.querySelectorAll('[data-tui-module]')];
     const optionRows = [...terminal.querySelectorAll('[data-tui-option]')];
+    const tabsContainer = terminal.querySelector('[data-tui-tabs]');
     const tabs = [...terminal.querySelectorAll('[data-tui-tab]')];
     const panels = [...terminal.querySelectorAll('[data-panel]')];
     const countLabels = [...terminal.querySelectorAll('[data-tui-count]')];
@@ -175,7 +176,8 @@
         element.textContent = label;
       });
       if (runButton) {
-        runButton.disabled = selectedRows().length === 0 || phase === 'running';
+        runButton.disabled = selectedRows().length === 0;
+        runButton.setAttribute('aria-disabled', String(phase === 'running' || selectedRows().length === 0));
       }
     };
 
@@ -199,15 +201,59 @@
       terminal.setAttribute('data-tab', name);
       tabs.forEach((tab) => {
         const active = tab.dataset.tuiTab === name;
-        tab.setAttribute('aria-selected', String(active));
-        tab.tabIndex = active ? 0 : -1;
+        if (compactTui.matches) {
+          tab.setAttribute('aria-selected', String(active));
+          tab.tabIndex = active ? 0 : -1;
+        }
         if (active && focus) {
           tab.focus();
         }
       });
       panels.forEach((panel) => {
-        panel.setAttribute('aria-hidden', String(compactTui.matches && panel.dataset.panel !== name));
+        panel.hidden = compactTui.matches && panel.dataset.panel !== name;
       });
+    };
+
+    const syncTabSemantics = () => {
+      const compact = compactTui.matches;
+      terminal.dataset.tabsReady = 'true';
+      if (compact) {
+        tabsContainer?.setAttribute('role', 'tablist');
+        tabsContainer?.setAttribute('aria-label', 'Dashboard panels');
+      } else {
+        tabsContainer?.removeAttribute('role');
+        tabsContainer?.removeAttribute('aria-label');
+      }
+      tabs.forEach((tab) => {
+        if (compact) {
+          tab.setAttribute('role', 'tab');
+        } else {
+          tab.removeAttribute('role');
+          tab.removeAttribute('aria-selected');
+          tab.removeAttribute('tabindex');
+        }
+      });
+      panels.forEach((panel) => {
+        if (compact) {
+          panel.setAttribute('role', 'tabpanel');
+        } else {
+          panel.removeAttribute('role');
+          panel.hidden = false;
+        }
+      });
+      setTab(terminal.dataset.tab || 'checks');
+      if (!compact && tabs.includes(document.activeElement)) {
+        (moduleRows.find((row) => row.tabIndex === 0) || moduleRows[0])?.focus();
+      }
+    };
+
+    const setModuleTabStop = (activeRow, focus = false) => {
+      moduleRows.forEach((row) => {
+        row.tabIndex = row === activeRow ? 0 : -1;
+      });
+      if (focus) {
+        activeRow.focus();
+      }
     };
 
     const makeLogRow = (kind, tag, text) => {
@@ -251,7 +297,7 @@
         recommendedButton.disabled = running;
       }
       if (runButton) {
-        runButton.disabled = running;
+        runButton.setAttribute('aria-disabled', String(running));
       }
     };
 
@@ -384,10 +430,30 @@
 
     moduleRows.forEach((row) => {
       row.addEventListener('click', () => {
+        setModuleTabStop(row);
         if (phase !== 'running') {
           setSelected(row, row.getAttribute('aria-pressed') !== 'true');
           updateCount();
         }
+      });
+      row.addEventListener('focus', () => setModuleTabStop(row));
+      row.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          row.click();
+          return;
+        }
+        if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+          return;
+        }
+        event.preventDefault();
+        const index = moduleRows.indexOf(row);
+        const nextIndex = event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? moduleRows.length - 1
+            : (index + (event.key === 'ArrowDown' ? 1 : -1) + moduleRows.length) % moduleRows.length;
+        setModuleTabStop(moduleRows[nextIndex], true);
       });
     });
 
@@ -414,7 +480,7 @@
         setTab(tabs[nextIndex].dataset.tuiTab, true);
       });
     });
-    compactTui.addEventListener('change', () => setTab(terminal.dataset.tab || 'checks'));
+    compactTui.addEventListener('change', syncTabSemantics);
 
     allButton?.addEventListener('click', () => {
       moduleRows.forEach((row) => setSelected(row, true));
@@ -426,64 +492,66 @@
     });
     resetButton?.addEventListener('click', () => reset());
     runButton?.addEventListener('click', run);
+    runButton?.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        run();
+      }
+    });
 
     terminal.addEventListener('keydown', (event) => {
       if (event.altKey || event.ctrlKey || event.metaKey) {
         return;
       }
-      const targetIsButton = event.target instanceof HTMLButtonElement;
-      if (event.key.toLowerCase() === 'a' && !targetIsButton && phase !== 'running') {
+      const target = event.target;
+      const targetIsEditable = target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable);
+      if (targetIsEditable) {
+        return;
+      }
+      if (event.key.toLowerCase() === 'a' && phase !== 'running') {
         event.preventDefault();
         moduleRows.forEach((row) => setSelected(row, true));
         updateCount();
-      } else if (event.key.toLowerCase() === 'r' && !targetIsButton && phase !== 'running') {
+      } else if (event.key.toLowerCase() === 'r' && phase !== 'running') {
         event.preventDefault();
         moduleRows.forEach((row) => setSelected(row, row.dataset.recommended === 'true'));
         updateCount();
       } else if (event.key === 'Escape') {
         event.preventDefault();
         reset();
-      } else if (event.key === 'Enter' && !targetIsButton) {
-        event.preventDefault();
-        run();
       }
     });
 
+    syncTabSemantics();
     reset({ announceReset: false });
   }
 
   if ('IntersectionObserver' in window) {
-    document.documentElement.classList.add('wdt-motion');
-    const heroSequence = [...document.querySelectorAll('#wdt-hero [data-seq="wait"]')];
-    const sequenceStep = reducedMotion.matches ? 0 : 55;
-    heroSequence.forEach((element, index) => {
-      window.setTimeout(() => {
-        element.dataset.seq = 'in';
-      }, index * sequenceStep);
-    });
-    window.setTimeout(() => {
-      heroSequence.forEach((element) => {
-        element.dataset.seq = 'in';
-      });
-    }, reducedMotion.matches ? 0 : 780);
-    const revealObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.dataset.reveal = 'in';
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    try {
+      const revealTargets = [...document.querySelectorAll('[data-reveal="scroll"]')];
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.dataset.reveal = 'in';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+      revealTargets.forEach((element) => revealObserver.observe(element));
+      document.documentElement.classList.add('wdt-motion');
 
-    document.querySelectorAll('[data-reveal="scroll"]').forEach((element) => {
-      revealObserver.observe(element);
-    });
-
-    window.setTimeout(() => {
-      document.querySelectorAll('[data-reveal="scroll"]').forEach((element) => {
-        element.dataset.reveal = 'in';
+      const heroSequence = [...document.querySelectorAll('#wdt-hero [data-seq="wait"]')];
+      const sequenceStep = reducedMotion.matches ? 0 : 55;
+      heroSequence.forEach((element, index) => {
+        window.setTimeout(() => {
+          element.dataset.seq = 'in';
+        }, index * sequenceStep);
       });
-      revealObserver.disconnect();
-    }, 2400);
+    } catch {
+      document.documentElement.classList.remove('wdt-motion');
+    }
   }
 })();

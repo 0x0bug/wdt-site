@@ -136,13 +136,12 @@ html .mono-block{margin:0;padding:var(--s4);font-family:var(--mono);font-size:13
 .term-run .count{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--text-muted);margin-left:auto}
 .tabs{display:none}
 @media(max-width:860px){
-.tabs{display:flex;background:var(--surface-2);border-bottom:1px solid var(--border-subtle)}
+.term[data-tabs-ready="true"] .tabs{display:flex;background:var(--surface-2);border-bottom:1px solid var(--border-subtle)}
 .tab{flex:1;min-height:46px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);background:transparent;border:0;border-bottom:2px solid transparent;cursor:pointer}
 .tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
 .term-body{grid-template-columns:1fr;grid-template-areas:"checks" "options" "output"}
 .tpanel[data-panel="checks"]{border-right:0}
 .tpanel[data-panel="options"]{border-top:0}
-.term[data-tab="checks"] .tpanel:not([data-panel="checks"]),.term[data-tab="options"] .tpanel:not([data-panel="options"]),.term[data-tab="output"] .tpanel:not([data-panel="output"]){display:none}
 .term-run .count{margin-left:0;width:100%}
 }
 
@@ -253,11 +252,10 @@ html .diff pre{margin:0;font-family:var(--mono);font-size:12.5px;line-height:2;c
 /* ---------- motion layer ---------- */
 .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
-/* Reveal + hero sequence. Both hide ONLY on an explicit opt-in value, so an unresolved
-   hole, a missing .wdt-motion class or an intro that never starts all degrade to visible content. */
-.wdt-motion [data-reveal="scroll"],.wdt-motion [data-seq="wait"],.wdt-motion [data-reveal="in"],.wdt-motion [data-seq="in"]{transition:opacity var(--motion-emphasized) var(--ease-enter),transform var(--motion-emphasized) var(--ease-enter);transition-delay:calc(var(--i,0) * var(--stagger))}
-.wdt-motion [data-reveal="scroll"],.wdt-motion [data-seq="wait"]{opacity:0;transform:translateY(var(--motion-shift-md))}
-.wdt-motion [data-reveal="in"],.wdt-motion [data-seq="in"]{opacity:1;transform:none}
+/* Source content is always visible. Motion starts only after JavaScript has observed an
+   element, and the finite animation always ends in the visible source state. */
+.wdt-motion [data-reveal="in"],.wdt-motion [data-seq="in"]{animation:revealIn var(--motion-emphasized) var(--ease-enter) both;animation-delay:calc(var(--i,0) * var(--stagger))}
+@keyframes revealIn{from{opacity:1;transform:translateY(var(--motion-shift-md))}to{opacity:1;transform:none}}
 
 /* header */
 .hdr{transition:background-color var(--motion-base) var(--ease-standard),border-color var(--motion-base) var(--ease-standard),box-shadow var(--motion-base) var(--ease-standard)}
@@ -360,10 +358,9 @@ html .diff pre{margin:0;font-family:var(--mono);font-size:12.5px;line-height:2;c
 html{scroll-behavior:auto}
 .hero::before{display:none}
 .caret{animation:none!important;opacity:1}
-.wdt-motion [data-reveal],.wdt-motion [data-seq]{opacity:1!important;transform:none!important}
+.wdt-motion [data-reveal="in"],.wdt-motion [data-seq="in"]{animation:none!important;opacity:1!important;transform:none!important}
 .flow::after{transform:none!important}
 }
-+
 /* Production static-page compatibility */
 .wrap{width:min(calc(100% - (2 * var(--gut))),var(--maxw));margin-inline:auto}
 body>header:not(.hdr){position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--border-subtle)}
@@ -375,6 +372,8 @@ body>header:not(.hdr) .brand{font-size:14px;color:var(--text-primary)}
 .nav-toggle{display:none;align-items:center;justify-content:center;margin-left:auto;min-width:44px;min-height:44px;background:transparent;border:1px solid var(--border-strong);color:var(--text-primary);font-family:var(--mono);cursor:pointer}
 .breadcrumb{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-top:var(--s6);margin-bottom:0;display:flex;gap:var(--s2);flex-wrap:wrap}
 .breadcrumb a{color:var(--text-muted)}
+.crumbs ol{display:flex;gap:var(--s2);flex-wrap:wrap;list-style:none;margin:0;padding:0}
+.crumbs li+li::before{content:"/";margin-right:var(--s2);color:var(--text-faint)}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:var(--s3)}
 .lead{font-size:clamp(17px,1.5vw,20px);line-height:1.65;color:var(--text-secondary);max-width:66ch}
 .article-meta{font-family:var(--mono);font-size:12px;line-height:1.7;letter-spacing:.06em;color:var(--text-faint);text-transform:uppercase;padding-bottom:var(--s6);border-bottom:1px solid var(--border-subtle)}

@@ -246,68 +246,68 @@
 <span data-tui-phase>System ready</span>
 </span>
 </div>
-<div class="tabs" role="tablist" aria-label="Dashboard panels">
-<button type="button" class="tab" role="tab" data-tui-tab="checks" aria-selected="true" aria-controls="wdt-p-checks">Checks</button>
-<button type="button" class="tab" role="tab" data-tui-tab="options" aria-selected="false" aria-controls="wdt-p-options" tabindex="-1">Options</button>
-<button type="button" class="tab" role="tab" data-tui-tab="output" aria-selected="false" aria-controls="wdt-p-output" tabindex="-1">Output</button>
+<div class="tabs" data-tui-tabs>
+<button type="button" class="tab" id="wdt-tab-checks" data-tui-tab="checks" aria-controls="wdt-p-checks">Checks</button>
+<button type="button" class="tab" id="wdt-tab-options" data-tui-tab="options" aria-controls="wdt-p-options">Options</button>
+<button type="button" class="tab" id="wdt-tab-output" data-tui-tab="output" aria-controls="wdt-p-output">Output</button>
 </div>
 <div class="term-body">
-<div class="tpanel" data-panel="checks" id="wdt-p-checks" role="tabpanel">
+<div class="tpanel" data-panel="checks" id="wdt-p-checks" aria-labelledby="wdt-tab-checks">
 <p class="col-label">Select diagnostics</p>
 <div class="sel">
-<button type="button" class="sel-row" data-tui-module="System" data-recommended="true" aria-pressed="true" data-state="">
+<button type="button" class="sel-row" data-tui-module="System" data-recommended="true" aria-pressed="true" data-state="" tabindex="0">
 <span class="mark">[x]</span>
 <span class="sel-name">System information</span>
 <span class="sel-tag">RECOMMENDED</span>
 </button>
-<button type="button" class="sel-row" data-tui-module="Security" data-recommended="true" aria-pressed="true" data-state="">
+<button type="button" class="sel-row" data-tui-module="Security" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
 <span class="mark">[x]</span>
 <span class="sel-name">Security posture</span>
 <span class="sel-tag">RECOMMENDED</span>
 </button>
-<button type="button" class="sel-row" data-tui-module="Performance" data-recommended="true" aria-pressed="true" data-state="">
+<button type="button" class="sel-row" data-tui-module="Performance" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
 <span class="mark">[x]</span>
 <span class="sel-name">Performance snapshot</span>
 <span class="sel-tag">RECOMMENDED</span>
 </button>
-<button type="button" class="sel-row" data-tui-module="Network" data-recommended="true" aria-pressed="true" data-state="">
+<button type="button" class="sel-row" data-tui-module="Network" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
 <span class="mark">[x]</span>
 <span class="sel-name">Network context</span>
 <span class="sel-tag">RECOMMENDED</span>
 </button>
-<button type="button" class="sel-row" data-tui-module="Time" data-recommended="true" aria-pressed="true" data-state="">
+<button type="button" class="sel-row" data-tui-module="Time" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
 <span class="mark">[x]</span>
 <span class="sel-name">Time synchronization</span>
 <span class="sel-tag">RECOMMENDED</span>
 </button>
-<button type="button" class="sel-row" data-tui-module="Disk" data-recommended="true" aria-pressed="true" data-state="">
+<button type="button" class="sel-row" data-tui-module="Disk" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
 <span class="mark">[x]</span>
 <span class="sel-name">Storage status</span>
 <span class="sel-tag">RECOMMENDED</span>
 </button>
-<button type="button" class="sel-row" data-tui-module="Crashes" data-recommended="false" aria-pressed="false" data-state="">
+<button type="button" class="sel-row" data-tui-module="Crashes" data-recommended="false" aria-pressed="false" data-state="" tabindex="-1">
 <span class="mark">[ ]</span>
 <span class="sel-name">Crashes and hangs</span>
 <span class="sel-tag">OPTIONAL</span>
 </button>
-<button type="button" class="sel-row" data-tui-module="Events" data-recommended="false" aria-pressed="false" data-state="">
+<button type="button" class="sel-row" data-tui-module="Events" data-recommended="false" aria-pressed="false" data-state="" tabindex="-1">
 <span class="mark">[ ]</span>
 <span class="sel-name">Event logs</span>
 <span class="sel-tag">OPTIONAL</span>
 </button>
-<button type="button" class="sel-row" data-tui-module="Services" data-recommended="false" aria-pressed="false" data-state="">
+<button type="button" class="sel-row" data-tui-module="Services" data-recommended="false" aria-pressed="false" data-state="" tabindex="-1">
 <span class="mark">[ ]</span>
 <span class="sel-name">Services and startup</span>
 <span class="sel-tag">OPTIONAL</span>
 </button>
-<button type="button" class="sel-row" data-tui-module="Updates" data-recommended="true" aria-pressed="true" data-state="">
+<button type="button" class="sel-row" data-tui-module="Updates" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
 <span class="mark">[x]</span>
 <span class="sel-name">Windows Update</span>
 <span class="sel-tag">RECOMMENDED</span>
 </button>
 </div>
 </div>
-<div class="tpanel" data-panel="options" id="wdt-p-options" role="tabpanel">
+<div class="tpanel" data-panel="options" id="wdt-p-options" aria-labelledby="wdt-tab-options">
 <p class="col-label">Options</p>
 <div class="sel">
 <button type="button" class="sel-row" data-tui-option="privacy" aria-pressed="true">
@@ -325,7 +325,7 @@
 </div>
 <p class="prose prose--sm" style="margin-top: var(--s5);">Privacy Mode swaps your computer name, user name and addresses for placeholders. Markdown export adds a second copy that pastes cleanly into an issue.</p>
 </div>
-<div class="tpanel" data-panel="output" id="wdt-p-output" role="tabpanel">
+<div class="tpanel" data-panel="output" id="wdt-p-output" aria-labelledby="wdt-tab-output">
 <p class="col-label">Output</p>
 <div class="prog">
 <span class="ascii" data-tui-progress>[░░░░░░░░░░░░] idle</span>
@@ -414,13 +414,13 @@
 <p class="flow-n">STEP 01 · SELECT</p>
 <h3>Choose checks</h3>
 <p class="prose">Ten areas are listed and the sensible ones are already ticked, so pressing run straight away is fine.</p>
-<p class="hint">↑ ↓ navigate · Space toggle</p>
+<p class="hint">↑ ↓ navigate · Space / Enter toggle</p>
 </div>
 <div class="flow-step" data-reveal="scroll" style="--i: 2;">
 <p class="flow-n">STEP 02 · RUN</p>
 <h3>Collect locally</h3>
 <p class="prose">It reads state Windows already keeps. No fixes are applied, no settings touched, nothing leaves the machine.</p>
-<p class="hint">A all · R recommended · Enter run</p>
+<p class="hint">A all · R recommended · Enter on Run</p>
 </div>
 <div class="flow-step" data-reveal="scroll" style="--i: 3;">
 <p class="flow-n">STEP 03 · REVIEW</p>
