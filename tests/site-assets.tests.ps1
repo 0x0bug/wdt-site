@@ -160,13 +160,21 @@ try {
 
     $socialPreviewPng = [System.IO.File]::ReadAllBytes((Join-Path $repositoryRoot 'assets\social-preview.png'))
     $pngSignature = [byte[]](137, 80, 78, 71, 13, 10, 26, 10)
-    Assert-True ($socialPreviewPng.Length -gt 24) 'Social preview PNG is too small to contain a valid PNG header.'
+    Assert-True ($socialPreviewPng.Length -gt 1024) 'Social preview PNG is below the minimum reasonable encoded image size.'
     for ($index = 0; $index -lt $pngSignature.Length; $index++) {
         Assert-True ($socialPreviewPng[$index] -eq $pngSignature[$index]) 'assets/social-preview.png does not have a PNG signature.'
     }
+    $pngPrefix = [System.Text.Encoding]::ASCII.GetString($socialPreviewPng, 0, [Math]::Min(64, $socialPreviewPng.Length))
+    Assert-True ($pngPrefix -notmatch '(?i)<svg|<\?xml|<!doctype|<html') 'assets/social-preview.png contains text or SVG data instead of an encoded PNG.'
+    $ihdrLength = ([int64]$socialPreviewPng[8] * 16777216) + ([int64]$socialPreviewPng[9] * 65536) + ([int64]$socialPreviewPng[10] * 256) + $socialPreviewPng[11]
+    $ihdrType = [System.Text.Encoding]::ASCII.GetString($socialPreviewPng, 12, 4)
+    Assert-True ($ihdrLength -eq 13 -and $ihdrType -eq 'IHDR') 'Social preview PNG must begin with a 13-byte IHDR chunk.'
     $pngWidth = ([int64]$socialPreviewPng[16] * 16777216) + ([int64]$socialPreviewPng[17] * 65536) + ([int64]$socialPreviewPng[18] * 256) + $socialPreviewPng[19]
     $pngHeight = ([int64]$socialPreviewPng[20] * 16777216) + ([int64]$socialPreviewPng[21] * 65536) + ([int64]$socialPreviewPng[22] * 256) + $socialPreviewPng[23]
     Assert-True ($pngWidth -eq 1280 -and $pngHeight -eq 640) "Social preview PNG dimensions are ${pngWidth}x${pngHeight}; expected 1280x640."
+    $iend = $socialPreviewPng[($socialPreviewPng.Length - 12)..($socialPreviewPng.Length - 1)]
+    $expectedIend = [byte[]](0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130)
+    Assert-True ([System.Linq.Enumerable]::SequenceEqual([byte[]]$iend, $expectedIend)) 'Social preview PNG is missing the canonical zero-length IEND chunk and CRC.'
     Assert-True ((Get-Item -LiteralPath (Join-Path $repositoryRoot 'run.ps1')).Length -gt 0) 'Published run.ps1 is empty.'
 
     $pagesWorkflowPath = Join-Path $repositoryRoot '.github\workflows\pages.yml'
@@ -245,6 +253,12 @@ try {
     Assert-True ($siteJavaScript -match 'prefers-reduced-motion') 'Reduced-motion behavior is missing from JavaScript.'
     Assert-True ($siteJavaScript -match "event\.key\s*-eq\s*'Escape'|event\.key\s*===\s*'Escape'") 'Escape-key handling is missing.'
     Assert-True ($siteJavaScript -match 'restoreFocus') 'Mobile menu focus restoration is missing.'
+    $focusSync = [regex]::Match($siteJavaScript, '(?s)const syncTabSemantics\s*=.*?\n\s*};')
+    Assert-True ($focusSync.Success) 'Responsive tab semantics synchronizer is missing.'
+    Assert-True ($siteJavaScript -match 'const panelByTab\s*=\s*new Map' -and $siteJavaScript -match 'getAttribute\([''\"]aria-controls[''\"]\)') 'Responsive tabs must explicitly map each tab to its aria-controls panel.'
+    Assert-True ($focusSync.Value -match 'const activeElement\s*=\s*document\.activeElement' -and $focusSync.Value -match 'tabsContainer\?\.contains\(activeElement\)') 'Responsive tabs must capture activeElement and distinguish focus inside the tablist before changing layout.'
+    Assert-True ($focusSync.Value -match 'focusInTabs' -and $focusSync.Value -match 'focusPanel\(activePanel\)' -and $focusSync.Value.IndexOf('focusPanel(activePanel)', [System.StringComparison]::Ordinal) -lt $focusSync.Value.IndexOf('terminal.dataset.layout', [System.StringComparison]::Ordinal)) 'Focused mobile tabs must transfer focus to their mapped panel before the tablist is hidden.'
+    Assert-True ($focusSync.Value -match '!wasCompact\s*&&\s*compact\s*&&\s*focusOnTransferredPanel' -and $focusSync.Value -match 'activeTab\?\.focus\(\)') 'Desktop-to-mobile transitions must restore a previously transferred panel focus to its related tab only.'
 
     Assert-True ($indexHtml -match 'navigate\s+[^<]*Space / Enter toggle') 'Visible module keyboard hint does not describe the supported toggle keys.'
     Assert-True ($indexHtml -match 'A all\s+[^<]*R recommended\s+[^<]*Enter on Run') 'Visible TUI shortcut hint does not describe the implemented actions.'
@@ -298,8 +312,11 @@ try {
     }
 
     $guidesIndexHtml = Get-Content -LiteralPath (Join-Path $repositoryRoot 'cases\index.html') -Raw
-    Assert-True ($guidesIndexHtml -match '(?is)<nav\b[^>]*aria-label=["'']Breadcrumb["''][^>]*>\s*<ol\b') 'Guides breadcrumb must be a named navigation landmark containing a list.'
-    Assert-True ($guidesIndexHtml -match '(?i)aria-current=["'']page["'']') 'Guides breadcrumb must identify the current page.'
+    $breadcrumb = [regex]::Match($guidesIndexHtml, '(?is)<nav\b[^>]*aria-label=["'']Breadcrumb["''][^>]*>.*?</nav>')
+    Assert-True ($breadcrumb.Success) 'Guides breadcrumb must be a named navigation landmark.'
+    Assert-True ($breadcrumb.Value -match '(?is)<ol\b[^>]*>.*?</ol>') 'Guides breadcrumb landmark must contain an ordered list.'
+    $currentBreadcrumbItems = @([regex]::Matches($breadcrumb.Value, '(?i)aria-current=["'']page["'']'))
+    Assert-True ($currentBreadcrumbItems.Count -eq 1) "Guides breadcrumb must contain exactly one aria-current=page item; found $($currentBreadcrumbItems.Count)."
 
     foreach ($htmlFile in @($htmlFiles | Where-Object { $_.Name -ne '404.html' })) {
         $metadataHtml = Get-Content -LiteralPath $htmlFile.FullName -Raw
