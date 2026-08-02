@@ -6,9 +6,11 @@
   <title>Create a Windows Diagnostic Report for Tech Support | WDT</title>
   <meta name="description" content="Create a local Windows 10 or Windows 11 diagnostic report for tech support with PowerShell, Privacy Mode, a findings summary and no automatic system changes.">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
-  <meta name="theme-color" content="#0a0f18">
+  <meta name="theme-color" content="#05080b">
   <link rel="canonical" href="https://wdt.digital/cases/windows-diagnostic-report-for-tech-support.html">
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="icon" href="../assets/social-preview.svg" type="image/svg+xml">
+  <script src="../assets/site.js" defer></script>
 
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Windows Diagnostics Toolkit">
@@ -30,21 +32,28 @@
     "@context": "https://schema.org",
     "@graph": [
       {
+        "@type": "TechArticle",
+        "headline": "Create a Windows diagnostic report for tech support",
+        "description": "Generate and review a local Windows diagnostic report using Windows Diagnostics Toolkit and Privacy Mode.",
+        "url": "https://wdt.digital/cases/windows-diagnostic-report-for-tech-support.html",
+        "author": {"@type": "Person", "name": "0x0bug", "url": "https://github.com/0x0bug"},
+        "inLanguage": "en"
+      },
+      {
         "@type": "HowTo",
         "name": "Create a Windows diagnostic report for tech support",
         "description": "Generate and review a local Windows diagnostic report using Windows Diagnostics Toolkit and Privacy Mode.",
         "url": "https://wdt.digital/cases/windows-diagnostic-report-for-tech-support.html",
-        "totalTime": "PT5M",
         "tool": [
           {"@type": "HowToTool", "name": "Windows PowerShell 5.1 or PowerShell 7"},
           {"@type": "HowToTool", "name": "Windows Diagnostics Toolkit"}
         ],
         "step": [
-          {"@type": "HowToStep", "position": 1, "name": "Download the toolkit", "text": "Clone or download Windows Diagnostics Toolkit from GitHub."},
-          {"@type": "HowToStep", "position": 2, "name": "Run the combined report", "text": "Run Invoke-WindowsDiagnostics.ps1 with All, PrivacyMode and ExportMarkdown."},
-          {"@type": "HowToStep", "position": 3, "name": "Review the findings", "text": "Read the findings summary and the relevant detailed sections."},
-          {"@type": "HowToStep", "position": 4, "name": "Review privacy", "text": "Inspect the final report manually and remove any remaining sensitive information."},
-          {"@type": "HowToStep", "position": 5, "name": "Share the minimum evidence", "text": "Attach only the relevant redacted report or excerpt to the support request."}
+          {"@type": "HowToStep", "position": 1, "name": "Clone and create the combined Windows report", "text": "Clone Windows Diagnostics Toolkit with the current Quick start workflow, open PowerShell in the toolkit directory and run the combined report command.", "url": "https://wdt.digital/cases/windows-diagnostic-report-for-tech-support.html#run"},
+          {"@type": "HowToStep", "position": 2, "name": "Understand what the report contains", "text": "Actionable conditions are grouped as OK, WARN or ERROR before the detailed diagnostic output.", "url": "https://wdt.digital/cases/windows-diagnostic-report-for-tech-support.html#contents"},
+          {"@type": "HowToStep", "position": 3, "name": "Read the report efficiently", "text": "Start with the overall status and findings summary.", "url": "https://wdt.digital/cases/windows-diagnostic-report-for-tech-support.html#review"},
+          {"@type": "HowToStep", "position": 4, "name": "Review privacy before sharing", "text": "Privacy Mode replaces common computer names, user names, profile paths, IP and MAC addresses, SIDs, GUIDs and device identifiers with stable per-report tokens.", "url": "https://wdt.digital/cases/windows-diagnostic-report-for-tech-support.html#privacy"},
+          {"@type": "HowToStep", "position": 5, "name": "Attach useful evidence to the support request", "text": "A useful report is accompanied by a short description of the symptom.", "url": "https://wdt.digital/cases/windows-diagnostic-report-for-tech-support.html#support"}
         ],
         "author": {"@type": "Person", "name": "0x0bug", "url": "https://github.com/0x0bug"},
         "inLanguage": "en"
@@ -61,12 +70,13 @@
   }
   </script>
 </head>
-<body>
+<body class="route-in">
 <a class="skip-link" href="#main-content">Skip to content</a>
-<header>
-  <nav class="wrap" aria-label="Primary navigation">
-    <a class="brand" href="../">Windows Diagnostics Toolkit</a>
-    <div class="nav-links"><a href="./">Guides</a><a href="../#privacy">Privacy</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub</a></div>
+<header class="hdr" data-open="0">
+  <nav class="hdr-in" aria-label="Primary navigation">
+    <a class="brand" href="../" aria-label="Windows Diagnostics Toolkit home"><span class="brand-mark" aria-hidden="true">WDT</span><span class="brand-name">Windows Diagnostics Toolkit</span></a>
+    <button class="wnav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">≡</button>
+    <div class="wnav" id="site-nav"><a href="../">Home</a><a href="./">Guides</a><a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub ↗</a></div>
   </nav>
 </header>
 <main id="main-content">
@@ -79,10 +89,10 @@
 
     <div class="toc"><strong>On this page</strong><ul><li><a href="#run">Create the report</a></li><li><a href="#contents">What the report contains</a></li><li><a href="#privacy">Prepare it for sharing</a></li><li><a href="#support">Attach useful evidence</a></li></ul></div>
 
-    <h2 id="run">1. Create the combined Windows report</h2>
-    <p>Open PowerShell in the toolkit directory and run:</p>
-    <pre><code>pwsh -NoProfile -File .\Invoke-WindowsDiagnostics.ps1 `
-  -All -PrivacyMode -ExportMarkdown</code></pre>
+    <h2 id="run">1. Clone and create the combined Windows report</h2>
+    <p>Clone Windows Diagnostics Toolkit with the current <a href="https://github.com/0x0bug/windows-diagnostics-toolkit#quick-start">Quick start workflow</a>, open PowerShell in the toolkit directory and run the combined report command.</p>
+    <div class="panel article-command"><div class="panel-hd"><span class="ttl">PowerShell</span><span class="end"><button type="button" class="wbtn wbtn--mini" data-copy-target="article-command" data-copy-status="article-copy-status" aria-label="Copy the PowerShell command">COPY</button></span></div><pre class="mono-block" id="article-command"><code>pwsh -NoProfile -File .\Invoke-WindowsDiagnostics.ps1 `
+  -All -PrivacyMode -ExportMarkdown</code></pre></div><span id="article-copy-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></span>
     <p>For Windows PowerShell 5.1:</p>
     <pre><code>powershell.exe -NoProfile -ExecutionPolicy Bypass `
   -File .\Invoke-WindowsDiagnostics.ps1 `
@@ -99,7 +109,7 @@
       <section class="card"><h3>Crashes and Event Logs</h3><p>Recent application failures, hangs, BugCheck events, dump metadata and critical or error events.</p></section>
     </div>
 
-    <h2>3. Read the report efficiently</h2>
+    <h2 id="review">3. Read the report efficiently</h2>
     <ol>
       <li>Start with the overall status and findings summary.</li>
       <li>Match each warning or error to the symptom and time when the problem occurred.</li>
@@ -144,7 +154,7 @@
       <a href="windows-update-pending-reboot.html">Check update and reboot indicators</a>
     </div>
 
-    <div class="actions"><a class="button primary" href="https://github.com/0x0bug/windows-diagnostics-toolkit#quick-start">Download and run the toolkit</a><a class="button" href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/report-example.md">View the example report</a></div>
+    <div class="actions"><a class="button primary" href="https://github.com/0x0bug/windows-diagnostics-toolkit#quick-start">Clone and run the toolkit</a><a class="button" href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/report-example.md">View the example report</a></div>
   </article>
 </main>
 <footer><div class="wrap">Reports remain local until the user chooses to share them.</div></footer>

@@ -31,6 +31,15 @@ function Get-FirstMatchValue {
     return [System.Net.WebUtility]::HtmlDecode($match.Groups[1].Value.Trim())
 }
 
+function ConvertTo-PlainText {
+    param([Parameter(Mandatory = $true)][string]$Html)
+
+    $withoutTags = [regex]::Replace($Html, '<[^>]+>', ' ')
+    $decoded = [System.Net.WebUtility]::HtmlDecode($withoutTags)
+    $normalized = [regex]::Replace($decoded, '\s+', ' ').Trim()
+    return [regex]::Replace($normalized, '\s+([,.;:!?])', '$1')
+}
+
 function Get-RelativeSitePath {
     param([Parameter(Mandatory = $true)][string]$FullPath)
 
@@ -204,6 +213,10 @@ foreach ($file in $htmlFiles) {
         }
     }
 
+    if ($relativePath -like 'cases/windows-*.html' -and $html -notmatch '"@type"\s*:\s*"TechArticle"') {
+        Add-TestIssue "$relativePath is missing TechArticle structured data."
+    }
+
     $referenceMatches = [regex]::Matches($html, '(?i)\b(?:href|src)=["'']([^"'']+)["'']')
     foreach ($referenceMatch in $referenceMatches) {
         $reference = [System.Net.WebUtility]::HtmlDecode($referenceMatch.Groups[1].Value)
@@ -214,6 +227,81 @@ foreach ($file in $htmlFiles) {
 
         if (-not (Test-Path -LiteralPath $target -PathType Leaf)) {
             Add-TestIssue "$relativePath contains a broken local reference: $reference -> $(Get-RelativeSitePath -FullPath $target)"
+        }
+    }
+}
+
+$howToArticlePath = Join-Path $siteRoot 'cases\windows-diagnostic-report-for-tech-support.html'
+$howToArticleHtml = Get-Content -LiteralPath $howToArticlePath -Raw
+$howToJsonMatches = [regex]::Matches($howToArticleHtml, '<script\s+[^>]*type=["'']application/ld\+json["''][^>]*>(.*?)</script>', $jsonOptions)
+$structuredItems = New-Object System.Collections.Generic.List[object]
+foreach ($jsonMatch in $howToJsonMatches) {
+    try {
+        $structuredDocument = $jsonMatch.Groups[1].Value | ConvertFrom-Json
+        $structuredItems.Add($structuredDocument)
+        if ($null -ne $structuredDocument.'@graph') {
+            foreach ($graphItem in @($structuredDocument.'@graph')) {
+                $structuredItems.Add($graphItem)
+            }
+        }
+    }
+    catch {
+        continue
+    }
+}
+
+$howToItems = @($structuredItems | Where-Object { $_.'@type' -eq 'HowTo' })
+$techArticleItems = @($structuredItems | Where-Object { $_.'@type' -eq 'TechArticle' })
+$breadcrumbItems = @($structuredItems | Where-Object { $_.'@type' -eq 'BreadcrumbList' })
+if ($howToItems.Count -ne 1) {
+    Add-TestIssue "Diagnostic report article contains $($howToItems.Count) HowTo objects; expected exactly one."
+}
+if ($techArticleItems.Count -ne 1) {
+    Add-TestIssue "Diagnostic report article contains $($techArticleItems.Count) TechArticle objects; expected exactly one."
+}
+if ($breadcrumbItems.Count -ne 1) {
+    Add-TestIssue "Diagnostic report article contains $($breadcrumbItems.Count) BreadcrumbList objects; expected exactly one."
+}
+if ($howToItems.Count -eq 1) {
+    $howTo = $howToItems[0]
+    if ($howTo.PSObject.Properties.Name -contains 'totalTime') {
+        Add-TestIssue 'Diagnostic report HowTo contains an unsupported totalTime.'
+    }
+    if ($howToArticleHtml -match 'Download the toolkit') {
+        Add-TestIssue 'Diagnostic report still contains the obsolete Download the toolkit step.'
+    }
+
+    $steps = @($howTo.step | Sort-Object -Property position)
+    if ($steps.Count -ne 5) {
+        Add-TestIssue "Diagnostic report HowTo contains $($steps.Count) steps; expected five visible article steps."
+    }
+    for ($index = 0; $index -lt $steps.Count; $index++) {
+        $step = $steps[$index]
+        if ([int]$step.position -ne ($index + 1)) {
+            Add-TestIssue "HowTo step position $($step.position) is out of sequence."
+        }
+
+        $expectedPrefix = 'https://wdt.digital/cases/windows-diagnostic-report-for-tech-support.html#'
+        $stepUrl = [string]$step.url
+        if (-not $stepUrl.StartsWith($expectedPrefix, [System.StringComparison]::Ordinal)) {
+            Add-TestIssue "HowTo step $($step.position) has an unexpected URL: $stepUrl"
+            continue
+        }
+        $fragment = $stepUrl.Substring($expectedPrefix.Length)
+        $sectionPattern = '(?is)<h2\b[^>]*\bid=["'']{0}["''][^>]*>(?<heading>.*?)</h2>(?<content>.*?)(?=<h2\b|</article>)' -f [regex]::Escape($fragment)
+        $sectionMatch = [regex]::Match($howToArticleHtml, $sectionPattern)
+        if (-not $sectionMatch.Success) {
+            Add-TestIssue "HowTo step $($step.position) URL does not resolve to a visible h2 section: #$fragment"
+            continue
+        }
+
+        $visibleHeading = (ConvertTo-PlainText -Html $sectionMatch.Groups['heading'].Value) -replace '^\d+\.\s*', ''
+        if ($visibleHeading -cne [string]$step.name) {
+            Add-TestIssue "HowTo step $($step.position) name does not match its visible heading: '$($step.name)' vs '$visibleHeading'."
+        }
+        $visibleSectionText = ConvertTo-PlainText -Html $sectionMatch.Groups['content'].Value
+        if (-not $visibleSectionText.Contains([string]$step.text)) {
+            Add-TestIssue "HowTo step $($step.position) text is not present in its visible section."
         }
     }
 }

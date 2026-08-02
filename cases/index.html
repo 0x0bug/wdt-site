@@ -6,9 +6,11 @@
   <title>Windows Troubleshooting Guides and Diagnostic Checks | WDT</title>
   <meta name="description" content="Read practical Windows 10 and Windows 11 troubleshooting guides for crashes, memory, disk space, Firewall, Windows Update, time sync, routes and support reports.">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
-  <meta name="theme-color" content="#0a0f18">
+  <meta name="theme-color" content="#05080b">
   <link rel="canonical" href="https://wdt.digital/cases/">
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="icon" href="../assets/social-preview.svg" type="image/svg+xml">
+  <script src="../assets/site.js" defer></script>
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Windows Diagnostics Toolkit">
@@ -77,37 +79,93 @@
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to content</a>
-<header>
-  <nav class="wrap" aria-label="Primary navigation">
-    <a class="brand" href="../">Windows Diagnostics Toolkit</a>
-    <div class="nav-links">
-      <a href="../">Home</a>
-      <a href="https://github.com/0x0bug/windows-diagnostics-toolkit#quick-start">Quick start</a>
-      <a href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub</a>
-    </div>
-  </nav>
+<p class="sr-only" id="site-status" role="status" aria-live="polite" aria-atomic="true">
+</p>
+<header class="hdr" data-open="0">
+<div class="hdr-in">
+<a class="brand" href="../" aria-label="Windows Diagnostics Toolkit home">
+<span class="brand-mark">WDT</span>
+<span class="brand-name">Windows Diagnostics Toolkit</span>
+</a>
+<button type="button" class="wnav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">≡</button>
+<nav class="wnav" id="site-nav" aria-label="Primary navigation">
+<a href="../">Home</a>
+<a href="./" aria-current="page">Guides</a>
+<a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub ↗</a>
+</nav>
+</div>
 </header>
-<main id="main-content">
-  <div class="wrap breadcrumb" aria-label="Breadcrumb"><a href="../">Home</a><span aria-hidden="true">/</span><span>Troubleshooting guides</span></div>
-  <section class="wrap">
-    <div class="eyebrow">Windows troubleshooting library</div>
-    <h1>Windows diagnostic and troubleshooting guides</h1>
-    <p class="lead">Start from the symptom, run the relevant read-only PowerShell module and use the generated evidence to narrow the next step. The toolkit reports state; it does not automatically repair or reconfigure Windows.</p>
-
-    <div class="grid">
-      <article class="card"><h2>Collect a diagnostic report for tech support</h2><p>Create a local TXT and Markdown support report, redact common identifiers with Privacy Mode and review the result before sharing.</p><a href="windows-diagnostic-report-for-tech-support.html">Open the support report guide</a></article>
-      <article class="card"><h2>Windows application keeps crashing</h2><p>Use Application Error, Windows Error Reporting, hang, BugCheck and recent dump metadata to confirm repeated failures.</p><a href="windows-application-crashes.html">Open the application crash guide</a></article>
-      <article class="card"><h2>Windows is using too much memory</h2><p>Compare available physical memory, pagefile usage and top processes by working set without installing a monitoring agent.</p><a href="windows-high-memory-usage.html">Open the high memory guide</a></article>
-      <article class="card"><h2>Windows Update may need a restart</h2><p>Inspect installed updates, reboot indicators and Windows Update related services without starting a scan or installing anything.</p><a href="windows-update-pending-reboot.html">Open the pending reboot guide</a></article>
-      <article class="card"><h2>Disk space is low or disk health is unclear</h2><p>List physical disk health and volume free-space percentages with a configurable low-space warning threshold.</p><a href="windows-disk-health-low-space.html">Open the disk health guide</a></article>
-      <article class="card"><h2>Windows Firewall profiles are disabled</h2><p>Check Domain, Private and Public firewall state together with Defender, Secure Boot, TPM and BitLocker context.</p><a href="windows-firewall-disabled.html">Open the Firewall guide</a></article>
-      <article class="card"><h2>Windows Time service is stopped</h2><p>Inspect W32Time state, start mode, timezone, clock values, configured source, verbose status and optional events.</p><a href="windows-time-service-stopped.html">Open the time synchronization guide</a></article>
-      <article class="card"><h2>Unexpected default route or proxy</h2><p>Compare route metrics, gateways, adapters, DNS, DHCP and WinINET or WinHTTP proxy context without changing the network stack.</p><a href="windows-network-routes.html">Open the network route guide</a></article>
-    </div>
-
-    <div class="callout"><strong>Privacy reminder:</strong> use the combined runner with <code>-PrivacyMode</code> before attaching a report to a public issue, forum or support request. Always inspect the final file manually.</div>
-  </section>
+<main id="main-content" class="sec route-in">
+<nav class="crumbs" aria-label="Breadcrumb">
+<ol>
+<li><a href="../">Home</a></li>
+<li><span class="path" aria-current="page">~/guides</span></li>
+</ol>
+</nav>
+<span class="kicker">Guide library</span>
+<h1 class="h-display" style="font-size: clamp(30px, 4.6vw, 58px);">Windows guides that start with the symptom.</h1>
+<p class="lede">Pick what you are seeing. Each guide names the check to run, the evidence it produces and what it deliberately leaves untouched.</p>
+<div class="gfeat" style="margin-top: var(--s7);">
+<a class="gcard" href="windows-diagnostic-report-for-tech-support.html">
+<span class="n">01 · Support report</span>
+<h2>Collect a diagnostic report for tech support</h2>
+<p>Produce one redacted TXT and Markdown file you can attach to a support request.</p>
+<span class="go">Open guide ↗</span>
+</a>
+<a class="gcard" href="windows-application-crashes.html">
+<span class="n">02 · Application crash logs</span>
+<h2>Find Windows application crash logs</h2>
+<p>Confirm repeated failures with error, hang, BugCheck and dump evidence.</p>
+<span class="go">Open guide ↗</span>
+</a>
+</div>
+<div class="glist" data-reveal="scroll" style="margin-top: var(--s6);">
+<a class="grow" href="windows-high-memory-usage.html">
+<span class="n">03</span>
+<span class="t">Windows is using too much memory</span>
+<span class="p">Compare free memory, pagefile use and the heaviest processes.</span>
+<span class="go">Open ↗</span>
+</a>
+<a class="grow" href="windows-update-pending-reboot.html">
+<span class="n">04</span>
+<span class="t">Windows Update may need a restart</span>
+<span class="p">Check installed updates, reboot indicators and update services.</span>
+<span class="go">Open ↗</span>
+</a>
+<a class="grow" href="windows-disk-health-low-space.html">
+<span class="n">05</span>
+<span class="t">Disk space is low or disk health is unclear</span>
+<span class="p">List physical disk state and volume free space with a warning threshold.</span>
+<span class="go">Open ↗</span>
+</a>
+<a class="grow" href="windows-firewall-disabled.html">
+<span class="n">06</span>
+<span class="t">Windows Firewall profiles are disabled</span>
+<span class="p">Check Domain, Private and Public state with Defender and Secure Boot context.</span>
+<span class="go">Open ↗</span>
+</a>
+<a class="grow" href="windows-time-service-stopped.html">
+<span class="n">07</span>
+<span class="t">Windows Time service is stopped</span>
+<span class="p">Inspect W32Time state, start mode, clock values and configured source.</span>
+<span class="go">Open ↗</span>
+</a>
+<a class="grow" href="windows-network-routes.html">
+<span class="n">08</span>
+<span class="t">Unexpected default route or proxy</span>
+<span class="p">Compare route metrics, gateways, DNS, DHCP and proxy context.</span>
+<span class="go">Open ↗</span>
+</a>
+</div>
+<p class="note">
+<span class="wtag" data-k="warn">[!]</span> Before attaching a report to a public issue or forum, run it with Privacy Mode and read the file once yourself.</p>
 </main>
-<footer><div class="wrap">Windows Diagnostics Toolkit is open-source, local-first and read-only by design.</div></footer>
+<footer class="foot">
+<div class="foot-in">
+<span class="name">Windows Diagnostics Toolkit</span>
+<span>MIT License · not affiliated with Microsoft</span>
+<span class="ok">[OK] Safe. Local. Transparent.</span>
+</div>
+</footer>
 </body>
 </html>

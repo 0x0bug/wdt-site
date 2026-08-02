@@ -6,15 +6,18 @@
   <title>Page not found | Windows Diagnostics Toolkit</title>
   <meta name="description" content="The requested Windows Diagnostics Toolkit page could not be found. Use the homepage or troubleshooting guide index to continue.">
   <meta name="robots" content="noindex,follow">
-  <meta name="theme-color" content="#0a0f18">
+  <meta name="theme-color" content="#05080b">
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="assets/social-preview.svg" type="image/svg+xml">
+  <script src="assets/site.js" defer></script>
 </head>
-<body>
+<body class="route-in">
 <a class="skip-link" href="#main-content">Skip to content</a>
-<header>
-  <nav class="wrap" aria-label="Primary navigation">
-    <a class="brand" href="./">Windows Diagnostics Toolkit</a>
-    <div class="nav-links"><a href="./">Home</a><a href="cases/">Troubleshooting guides</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub</a></div>
+<header class="hdr" data-open="0">
+  <nav class="hdr-in" aria-label="Primary navigation">
+    <a class="brand" href="./" aria-label="Windows Diagnostics Toolkit home"><span class="brand-mark" aria-hidden="true">WDT</span><span class="brand-name">Windows Diagnostics Toolkit</span></a>
+    <button class="wnav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">≡</button>
+    <div class="wnav" id="site-nav"><a href="./">Home</a><a href="cases/">Guides</a><a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub ↗</a></div>
   </nav>
 </header>
 <main id="main-content">

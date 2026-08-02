@@ -6,9 +6,11 @@
   <title>Diagnose High Memory Usage on Windows with PowerShell | WDT</title>
   <meta name="description" content="Check available RAM, pagefile usage, CPU load and top processes by working set with a local read-only Windows PowerShell performance snapshot.">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
-  <meta name="theme-color" content="#0a0f18">
+  <meta name="theme-color" content="#05080b">
   <link rel="canonical" href="https://wdt.digital/cases/windows-high-memory-usage.html">
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="icon" href="../assets/social-preview.svg" type="image/svg+xml">
+  <script src="../assets/site.js" defer></script>
 
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Windows Diagnostics Toolkit">
@@ -53,12 +55,13 @@
   }
   </script>
 </head>
-<body>
+<body class="route-in">
 <a class="skip-link" href="#main-content">Skip to content</a>
-<header>
-  <nav class="wrap" aria-label="Primary navigation">
-    <a class="brand" href="../">Windows Diagnostics Toolkit</a>
-    <div class="nav-links"><a href="./">Guides</a><a href="../#checks">Checks</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub</a></div>
+<header class="hdr" data-open="0">
+  <nav class="hdr-in" aria-label="Primary navigation">
+    <a class="brand" href="../" aria-label="Windows Diagnostics Toolkit home"><span class="brand-mark" aria-hidden="true">WDT</span><span class="brand-name">Windows Diagnostics Toolkit</span></a>
+    <button class="wnav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">≡</button>
+    <div class="wnav" id="site-nav"><a href="../">Home</a><a href="./">Guides</a><a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub ↗</a></div>
   </nav>
 </header>
 <main id="main-content">
@@ -72,8 +75,8 @@
     <div class="toc"><strong>On this page</strong><ul><li><a href="#command">Command to run</a></li><li><a href="#checks">Performance values collected</a></li><li><a href="#interpretation">How to interpret memory usage</a></li><li><a href="#limits">Snapshot limitations</a></li></ul></div>
 
     <h2 id="command">Run the performance snapshot</h2>
-    <pre><code>pwsh -NoProfile -File .\Invoke-WindowsDiagnostics.ps1 `
-  -Performance -PrivacyMode -ExportMarkdown</code></pre>
+    <div class="panel article-command"><div class="panel-hd"><span class="ttl">PowerShell</span><span class="end"><button type="button" class="wbtn wbtn--mini" data-copy-target="article-command" data-copy-status="article-copy-status" aria-label="Copy the PowerShell command">COPY</button></span></div><pre class="mono-block" id="article-command"><code>pwsh -NoProfile -File .\Invoke-WindowsDiagnostics.ps1 `
+  -Performance -PrivacyMode -ExportMarkdown</code></pre></div><span id="article-copy-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></span>
     <p>For custom thresholds and a longer process list, run the standalone module:</p>
     <pre><code>pwsh -NoProfile -File .\scripts\performance-snapshot.ps1 `
   -TopProcessCount 20 -LowMemoryPercent 20 -HighCpuPercent 90</code></pre>
