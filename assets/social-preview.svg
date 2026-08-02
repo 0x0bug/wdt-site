@@ -27,7 +27,7 @@
 
   <text x="82" y="520" fill="#46e08a" font-family="Cascadia Code, Consolas, monospace" font-size="20" font-weight="700">[x] READ-ONLY</text>
   <text x="330" y="520" fill="#46e08a" font-family="Cascadia Code, Consolas, monospace" font-size="20" font-weight="700">[x] LOCAL</text>
-  <text x="512" y="520" fill="#46e08a" font-family="Cascadia Code, Consolas, monospace" font-size="20" font-weight="700">[x] PRIVATE</text>
+  <text x="512" y="520" fill="#46e08a" font-family="Cascadia Code, Consolas, monospace" font-size="20" font-weight="700">[x] PRIVACY MODE</text>
   <text x="82" y="560" fill="#46e08a" font-family="Cascadia Code, Consolas, monospace" font-size="20">github.com/0x0bug/windows-diagnostics-toolkit</text>
   <text x="1085" y="560" fill="#8290a0" font-family="Cascadia Code, Consolas, monospace" font-size="20">MIT</text>
 </svg>
