@@ -36,6 +36,10 @@ python -m http.server 8000
 
 Then open `http://localhost:8000/`.
 
+## Line endings
+
+PowerShell files are stored and checked out with LF line endings (`.gitattributes`: `*.ps1 text eol=lf`). This keeps the byte-for-byte bootstrap SHA-256 comparison identical on Windows checkouts with `core.autocrlf=true`.
+
 ## License
 
 The website source is available under the [MIT License](LICENSE).

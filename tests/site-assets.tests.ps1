@@ -170,6 +170,34 @@ try {
         }
     }
 
+    $gitAttributesPath = Join-Path $repositoryRoot '.gitattributes'
+    Assert-True (Test-Path -LiteralPath $gitAttributesPath -PathType Leaf) 'Repository root is missing .gitattributes; the PowerShell LF policy must be repository-owned.'
+    $gitAttributesLines = @(Get-Content -LiteralPath $gitAttributesPath)
+    Assert-True (@($gitAttributesLines | Where-Object { $_ -match '^\s*\*\.ps1\s+text\s+eol=lf\s*$' }).Count -ge 1) '.gitattributes does not contain the active rule: *.ps1 text eol=lf'
+    $publishedBootstrapBytes = [System.IO.File]::ReadAllBytes((Join-Path $repositoryRoot 'run.ps1'))
+    Assert-True ([System.Array]::IndexOf($publishedBootstrapBytes, [byte]13) -lt 0) 'run.ps1 checkout contains CR bytes; the byte-for-byte bootstrap comparison requires LF. Re-checkout PowerShell files (for example: git checkout -- .).'
+
+    $dependabotPath = Join-Path $repositoryRoot '.github\dependabot.yml'
+    Assert-True (Test-Path -LiteralPath $dependabotPath -PathType Leaf) 'Dependabot configuration is missing: .github/dependabot.yml'
+    $dependabotText = Get-Content -LiteralPath $dependabotPath -Raw
+    Assert-True ($dependabotText -match '(?m)^version:\s*2\s*$') 'dependabot.yml must declare version: 2.'
+    Assert-True ($dependabotText -match '(?m)^\s*-\s*package-ecosystem:\s*"github-actions"\s*$') 'dependabot.yml must cover the github-actions ecosystem.'
+    Assert-True ($dependabotText -match '(?m)^\s*directory:\s*"/"\s*$') 'dependabot.yml must cover the repository root directory.'
+
+    Assert-True ($pagesWorkflow -match '(?m)^  group:\s*pages-\$\{\{\s*github\.ref\s*\}\}\s*$') 'Pages concurrency group must be scoped per ref: pages-${{ github.ref }}'
+    Assert-True ($pagesWorkflow -match '(?m)^  cancel-in-progress:\s*false\s*$') 'Pages concurrency must keep cancel-in-progress: false.'
+
+    $checkoutShas = New-Object System.Collections.Generic.List[string]
+    foreach ($workflowFile in $workflowFiles) {
+        $workflowText = Get-Content -LiteralPath $workflowFile.FullName -Raw
+        foreach ($checkoutMatch in [regex]::Matches($workflowText, '(?m)^\s*uses:\s*actions/checkout@([0-9a-fA-F]{40})\b')) {
+            $checkoutShas.Add($checkoutMatch.Groups[1].Value.ToLowerInvariant())
+        }
+    }
+    $uniqueCheckoutShas = @($checkoutShas | Sort-Object -Unique)
+    Assert-True ($checkoutShas.Count -ge 1) 'No pinned actions/checkout references were found in the workflows.'
+    Assert-True ($uniqueCheckoutShas.Count -eq 1) "actions/checkout must be pinned to one consistent commit SHA across all workflows; found: $($uniqueCheckoutShas -join ', ')"
+
     $indexHtml = Get-Content -LiteralPath (Join-Path $repositoryRoot 'index.html') -Raw
     $siteJavaScript = Get-Content -LiteralPath (Join-Path $repositoryRoot 'assets\site.js') -Raw
     Assert-True ($indexHtml -match '(?i)<[^>]+\brole=["'']status["''][^>]+\baria-live=["'']polite["'']') 'Copy feedback is missing a polite screen-reader status element.'
