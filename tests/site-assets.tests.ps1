@@ -211,6 +211,7 @@ try {
         Assert-True ($articleHtml -match '(?i)<button[^>]+data-copy-(?:text|target)=["''][^"'']+["''][^>]+data-copy-status=["''][^"'']+["'']') "Article command copy control is missing: $articlePath"
     }
     Assert-True ($indexHtml -match [regex]::Escape('Interactive simulation based on the current WDT terminal interface. Nothing runs on your PC.')) 'TUI simulation disclosure is missing.'
+    Assert-True ($indexHtml -match [regex]::Escape('Output: .\WindowsDiagnosticsReports')) 'TUI default output directory is inaccurate.'
     Assert-True ($indexHtml -match 'data-tui-module' -and $indexHtml -match 'data-tui-option' -and $indexHtml -match 'data-tui-action=["'']run["'']') 'Interactive TUI controls are missing.'
     foreach ($state in @('QUEUED', 'RUNNING', '[OK]', '[WARN]', '[ERROR]')) {
         Assert-True ($indexHtml -match [regex]::Escape($state) -or $siteJavaScript -match [regex]::Escape($state)) "TUI state is missing: $state"

@@ -367,9 +367,9 @@
         }
         log?.append(
           makeLogRow('dim', '--', 'elapsed 2.4s · 2 warnings · 1 error'),
-          makeLogRow('dim', '>', '.\\WindowsDiagnosticsReport-DEMO.txt'),
+          makeLogRow('dim', '>', '.\\WindowsDiagnosticsReports\\WindowsDiagnosticsReport-DEMO.txt'),
           ...(optionRows.find((row) => row.dataset.tuiOption === 'markdown')?.getAttribute('aria-pressed') === 'true'
-            ? [makeLogRow('dim', '>', '.\\WindowsDiagnosticsReport-DEMO.md')]
+            ? [makeLogRow('dim', '>', '.\\WindowsDiagnosticsReports\\WindowsDiagnosticsReport-DEMO.md')]
             : [])
         );
         if (log) {

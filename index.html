@@ -114,7 +114,7 @@
             "name": "Where are reports stored?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Reports are written to the selected output directory. Nothing is uploaded automatically."
+              "text": "The interactive TUI writes to .\\WindowsDiagnosticsReports by default. Command-line mode writes to the current directory unless OutputDirectory is provided. Nothing is uploaded automatically."
             }
           },
           {
@@ -320,7 +320,7 @@
 </button>
 <p class="static-row">
 <span class="mark">&gt;</span>
-<span>Output: current directory</span>
+<span>Output: .\WindowsDiagnosticsReports</span>
 </p>
 </div>
 <p class="prose prose--sm" style="margin-top: var(--s5);">Privacy Mode swaps your computer name, user name and addresses for placeholders. Markdown export adds a second copy that pastes cleanly into an issue.</p>
@@ -665,7 +665,7 @@ DeviceId     : <span class="now">&lt;ID-1&gt;</span>
 <details>
 <summary>
 <span class="q">?</span>Where do the reports go?</summary>
-<p>Into the current directory by default, or the output directory you choose — a TXT file and, if enabled, a Markdown copy. Nothing is uploaded automatically.</p>
+<p>The interactive TUI uses <code>.\WindowsDiagnosticsReports</code> by default. Command-line mode uses the current directory unless you pass <code>-OutputDirectory</code>. It writes a TXT file and, if enabled, a Markdown copy; nothing is uploaded automatically.</p>
 </details>
 <details>
 <summary>

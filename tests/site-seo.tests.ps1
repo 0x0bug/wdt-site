@@ -204,6 +204,10 @@ foreach ($file in $htmlFiles) {
         }
     }
 
+    if ($relativePath -like 'cases/windows-*.html' -and $html -notmatch '"@type"\s*:\s*"TechArticle"') {
+        Add-TestIssue "$relativePath is missing TechArticle structured data."
+    }
+
     $referenceMatches = [regex]::Matches($html, '(?i)\b(?:href|src)=["'']([^"'']+)["'']')
     foreach ($referenceMatch in $referenceMatches) {
         $reference = [System.Net.WebUtility]::HtmlDecode($referenceMatch.Groups[1].Value)
