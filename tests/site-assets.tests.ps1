@@ -234,6 +234,33 @@ try {
 
     $indexHtml = Get-Content -LiteralPath (Join-Path $repositoryRoot 'index.html') -Raw
     $siteJavaScript = Get-Content -LiteralPath (Join-Path $repositoryRoot 'assets\site.js') -Raw
+    $bootstrapCommand = 'irm https://wdt.digital/run.ps1 | iex'
+    $releaseUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta'
+    $zipUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.1.0-beta/windows-diagnostics-toolkit-v0.1.0-beta.zip'
+    $zipSha256 = 'ee741a450fa20b0903adec858af446806cba74666fde0f98b1bde85dc0188e0f'
+    $homeJsonLdMatch = [regex]::Match($indexHtml, '(?is)<script\s+[^>]*type=["'']application/ld\+json["''][^>]*>(.*?)</script>')
+    Assert-True $homeJsonLdMatch.Success 'Home page is missing JSON-LD.'
+    $homeStructuredData = $homeJsonLdMatch.Groups[1].Value | ConvertFrom-Json
+    $softwareApplication = @($homeStructuredData.'@graph' | Where-Object { $_.'@type' -ceq 'SoftwareApplication' })
+    Assert-True ($softwareApplication.Count -eq 1) 'Home JSON-LD must contain exactly one SoftwareApplication.'
+    Assert-True ($softwareApplication[0].softwareVersion -ceq '0.1.0-beta') 'SoftwareApplication softwareVersion is incorrect.'
+    Assert-True ($softwareApplication[0].downloadUrl -ceq $zipUrl) 'SoftwareApplication downloadUrl is incorrect.'
+    Assert-True ($softwareApplication[0].releaseNotes -ceq $releaseUrl) 'SoftwareApplication releaseNotes is incorrect.'
+    Assert-True (@([regex]::Matches($indexHtml, [regex]::Escape($bootstrapCommand))).Count -eq 1) 'Home page must contain exactly one primary bootstrap command.'
+    $quickCommandMatch = [regex]::Match($indexHtml, '(?is)<pre\b[^>]*\bid=["'']quick-command["''][^>]*>(.*?)</pre>')
+    Assert-True $quickCommandMatch.Success 'Home page is missing the quick-command copy target.'
+    $quickCommandText = [System.Net.WebUtility]::HtmlDecode([regex]::Replace($quickCommandMatch.Groups[1].Value, '<[^>]+>', ''))
+    $quickCommandText = ($quickCommandText -replace '(?m)^\s*PS>\s?', '').Trim()
+    Assert-True ($quickCommandText -ceq $bootstrapCommand) 'Quick-start COPY target does not contain the canonical bootstrap command.'
+    Assert-True ($indexHtml -match '(?i)<section\b[^>]*\bid=["'']quick-start["'']') 'Quick-start section is missing its permanent ID.'
+    Assert-True (@([regex]::Matches($indexHtml, '(?i)href=["'']#quick-start["'']')).Count -eq 2) 'Hero and bottom CTA must both target #quick-start.'
+    Assert-True ($indexHtml.Contains($releaseUrl)) 'Home page is missing the GitHub prerelease URL.'
+    Assert-True ($indexHtml.Contains($zipUrl)) 'Home page is missing the release ZIP URL.'
+    Assert-True ($indexHtml.Contains($zipSha256)) 'Home page is missing the release ZIP SHA-256.'
+    Assert-True ($indexHtml.Contains('irm https://wdt.digital/run.ps1 -OutFile .\wdt-run.ps1')) 'Home page is missing the bootstrap inspection workflow.'
+    foreach ($staleCopy in @('no beta release ZIP is published yet', 'planned v0.1.0-beta', 'until that beta is published', 'bootstrap is prepared')) {
+        Assert-True ($indexHtml.IndexOf($staleCopy, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) "Home page contains stale prerelease copy: $staleCopy"
+    }
     Assert-True ($indexHtml -match '(?i)<[^>]+\brole=["'']status["''][^>]+\baria-live=["'']polite["'']') 'Copy feedback is missing a polite screen-reader status element.'
     Assert-True ($indexHtml -match '(?i)<button[^>]+\bdata-copy-status=["''][^"'']+["''][^>]*>') 'Copy button is not associated with the status element.'
     Assert-True ($siteJavaScript -match '\.textContent\s*=') 'Copy feedback must update status text without HTML injection.'

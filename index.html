@@ -58,6 +58,9 @@
         },
         "license": "https://opensource.org/license/mit",
         "codeRepository": "https://github.com/0x0bug/windows-diagnostics-toolkit",
+        "softwareVersion": "0.1.0-beta",
+        "downloadUrl": "https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.1.0-beta/windows-diagnostics-toolkit-v0.1.0-beta.zip",
+        "releaseNotes": "https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta",
         "author": {
           "@type": "Person",
           "name": "0x0bug",
@@ -161,10 +164,11 @@
 <h1 class="h-display">
 <span data-seq="wait" style="display: block;">See what Windows is doing.</span> <span data-seq="wait" style="display: block; color: var(--accent);">Change nothing.</span>
 </h1>
+<p class="hint" data-seq="wait">v0.1.0-beta · public prerelease</p>
 <p class="lede" data-seq="wait">A free PowerShell toolkit that reads Windows state and writes local TXT and optional Markdown reports for security, performance, network, crashes, disks, services and updates.</p>
 <p class="hint" data-seq="wait" style="--i: 1;">It changes nothing and uploads nothing automatically. Privacy Mode reduces common identifiers, but review every report before sharing it.</p>
 <div class="row" data-seq="wait" style="margin: var(--s6) 0;">
-<a class="wbtn wbtn--primary" href="https://github.com/0x0bug/windows-diagnostics-toolkit#quick-start">&gt; Run diagnostics</a>
+<a class="wbtn wbtn--primary" href="#quick-start">&gt; Run diagnostics</a>
 <a class="wbtn" href="#try">Try the interface</a>
 </div>
 <dl class="stats" data-seq="wait">
@@ -431,36 +435,48 @@
 </div>
 </section>
 <div class="band">
-<section class="sec split">
+<section class="sec split" id="quick-start">
 <div>
 <span class="kicker" data-reveal="scroll">03 / Quick start</span>
-<h2 data-reveal="scroll">Clone. Run. Diagnose.</h2>
-<p class="prose" data-reveal="scroll" style="--i: 1;">No installer and no extra PowerShell modules. The PowerShell already in Windows is enough.</p>
+<h2 data-reveal="scroll">Run the verified beta.</h2>
+<p class="prose" data-reveal="scroll" style="--i: 1;">The first public beta is available as a GitHub prerelease. The bootstrap is fixed to <code>v0.1.0-beta</code> and verifies the release ZIP before execution.</p>
 <ul class="list list--mono" data-reveal="scroll" style="margin-top: var(--s5);">
 <li>
-<span class="b wtag" data-k="ok">[OK]</span>The interactive interface opens by default</li>
+<span class="b wtag" data-k="ok">[BETA]</span>v0.1.0-beta · public prerelease</li>
 <li>
-<span class="b wtag" data-k="ok">[OK]</span>Recommended checks are preselected</li>
+<span class="b wtag" data-k="ok">[HASH]</span><span class="release-hash">SHA-256: ee741a450fa20b0903adec858af446806cba74666fde0f98b1bde85dc0188e0f</span></li>
 <li>
-<span class="b wtag" data-k="ok">[OK]</span>Privacy Mode is on by default</li>
+<span class="b wtag" data-k="ok">[FIXED]</span>ZIP and checksum come from one tagged GitHub Release</li>
 </ul>
+<p class="note"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta">View the GitHub prerelease ↗</a></p>
 </div>
 <div>
 <div class="panel">
 <div class="panel-hd">
 <span class="ttl">PowerShell</span>
 <span class="end">
-<button type="button" class="wbtn wbtn--mini" data-copy-target="quick-command" data-copy-status="site-status" aria-label="Copy the quick start commands">COPY</button>
+<button type="button" class="wbtn wbtn--mini" data-copy-target="quick-command" data-copy-status="site-status" aria-label="Copy the beta bootstrap command">COPY</button>
 </span>
 </div>
 <pre class="mono-block" id="quick-command">
-<span class="p">PS&gt;</span> git clone https://github.com/0x0bug/windows-diagnostics-toolkit.git
+<span class="p">PS&gt;</span> irm https://wdt.digital/run.ps1 | iex</pre>
+<p class="panel-ft">
+<span class="wtag" data-k="ok">VERIFIED</span> · ZIP checked before extraction</p>
+</div>
+<p class="note">The release ZIP is verified with SHA-256 before extraction. The one-line command still requires trust in the bootstrap served by GitHub Pages. Inspect run.ps1 first on sensitive systems.</p>
+<div class="panel" style="margin-top: var(--s5);">
+<div class="panel-hd"><span class="ttl">Inspect first</span></div>
+<pre class="mono-block"><span class="p">PS&gt;</span> irm https://wdt.digital/run.ps1 -OutFile .\wdt-run.ps1
+<span class="p">PS&gt;</span> notepad .\wdt-run.ps1
+<span class="p">PS&gt;</span> .\wdt-run.ps1</pre>
+</div>
+<div class="panel" style="margin-top: var(--s5);">
+<div class="panel-hd"><span class="ttl">Clone for development</span></div>
+<pre class="mono-block"><span class="p">PS&gt;</span> git clone https://github.com/0x0bug/windows-diagnostics-toolkit.git
 <span class="p">PS&gt;</span> cd windows-diagnostics-toolkit
 <span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1</pre>
-<p class="panel-ft">
-<span class="wtag" data-k="ok">READY</span> · execution policy unchanged</p>
+<p class="panel-ft">Recommended for source inspection and development</p>
 </div>
-<p class="note">If Windows says scripts are disabled, one launch command bypasses it for that single process only — no machine setting changes. The bootstrap is prepared, but no beta release ZIP is published yet. Use the clone workflow above.</p>
 </div>
 </section>
 </div>
@@ -686,7 +702,8 @@ DeviceId     : <span class="now">&lt;ID-1&gt;</span>
 <h2>Diagnose Windows before changing Windows.</h2>
 <p class="lede">Open source, dependency-free, and built to produce evidence you can actually send to someone.</p>
 <div class="row">
-<a class="wbtn wbtn--primary" href="https://github.com/0x0bug/windows-diagnostics-toolkit#quick-start">&gt; Quick start</a>
+<a class="wbtn wbtn--primary" href="#quick-start">&gt; Quick start</a>
+<a class="wbtn" href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta">View v0.1.0-beta</a>
 <a class="wbtn" href="https://github.com/0x0bug/windows-diagnostics-toolkit">View source</a>
 <a class="wbtn" href="https://github.com/0x0bug/windows-diagnostics-toolkit/issues/new/choose">Report a problem</a>
 </div>
