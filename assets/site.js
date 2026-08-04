@@ -105,16 +105,17 @@
       const status = statusId
         ? document.getElementById(statusId)
         : document.getElementById('site-status');
+      const copyLabel = button.getAttribute('data-copy-label') || 'PowerShell command';
       const text = target?.textContent?.replace(/^PS>\s?/gm, '').trim();
 
       if (!text) {
-        announce(status, 'No command is available to copy.');
+        announce(status, `No ${copyLabel.toLowerCase()} is available to copy.`);
         return;
       }
 
       try {
         await navigator.clipboard.writeText(text);
-        announce(status, 'PowerShell command copied to the clipboard.');
+        announce(status, `${copyLabel} copied to the clipboard.`);
         const originalLabel = button.textContent;
         button.textContent = 'COPIED';
         button.classList.add('is-copied');
@@ -128,7 +129,7 @@
         const selection = window.getSelection();
         selection?.removeAllRanges();
         selection?.addRange(range);
-        announce(status, 'Clipboard access failed. The command is selected for manual copying.');
+        announce(status, `Clipboard access failed. The ${copyLabel.toLowerCase()} is selected for manual copying.`);
       }
     });
   });
@@ -161,7 +162,8 @@
     const statusByModule = {
       Security: ['warn', '[WARN]', 'Firewall profile deserves review'],
       Disk: ['warn', '[WARN]', 'System volume below sample threshold'],
-      Updates: ['err', '[ERROR]', 'Sample reboot indicator reported']
+      Updates: ['warn', '[WARN]', 'Sample reboot indicator reported'],
+      Crashes: ['err', '[ERROR]', 'Repeated recent BugChecks reported']
     };
 
     const clearTimers = () => {
@@ -353,7 +355,7 @@
       }
       setProgress(0, 0, 'idle');
       if (log) {
-        log.replaceChildren(makeLogRow('dim', '>', 'Ready. Toggle the checks you want, then press run.'));
+        log.replaceChildren(makeLogRow('dim', '>', 'Ready.'));
       }
       setTab('checks');
       updateCount();
@@ -434,6 +436,11 @@
       const completeTimer = window.setTimeout(() => {
         phase = 'done';
         terminal.dataset.phase = phase;
+        const completedResults = activeRows.map((row) => statusByModule[row.dataset.tuiModule]?.[0] || 'ok');
+        const warningCount = completedResults.filter((result) => result === 'warn').length;
+        const errorCount = completedResults.filter((result) => result === 'err').length;
+        const warningLabel = `${warningCount} warning${warningCount === 1 ? '' : 's'}`;
+        const errorLabel = `${errorCount} error${errorCount === 1 ? '' : 's'}`;
         setControlsDisabled(false);
         if (phaseLabel) {
           phaseLabel.textContent = 'Complete · sample data';
@@ -442,7 +449,7 @@
           runButton.textContent = 'RUN AGAIN';
         }
         log?.append(
-          makeLogRow('dim', '--', 'elapsed 2.4s · 2 warnings · 1 error'),
+          makeLogRow('dim', '--', `elapsed 2.4s · ${warningLabel} · ${errorLabel}`),
           makeLogRow('dim', '>', '.\\WindowsDiagnosticsReports\\WindowsDiagnosticsReport-DEMO.txt'),
           ...(optionRows.find((row) => row.dataset.tuiOption === 'markdown')?.getAttribute('aria-pressed') === 'true'
             ? [makeLogRow('dim', '>', '.\\WindowsDiagnosticsReports\\WindowsDiagnosticsReport-DEMO.md')]
@@ -453,7 +460,7 @@
         }
         setProgress(activeRows.length, activeRows.length, `${activeRows.length} of ${activeRows.length} checks`);
         updateCount();
-        announce(live, 'Simulation complete. Sample result: two warnings and one error. No diagnostics ran on your PC.');
+        announce(live, `Simulation complete. Sample result: ${warningLabel} and ${errorLabel}. No diagnostics ran on your PC.`);
       }, pace * activeRows.length + 40);
       timers.push(completeTimer);
     };

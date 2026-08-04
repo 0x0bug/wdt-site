@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Windows Diagnostics Tool for PowerShell | WDT</title>
-  <meta name="description" content="Run a responsive read-only Windows diagnostics TUI and generate local support reports for security, performance, network, crashes, disks, services and updates.">
+  <title>Windows Diagnostic Collection Tool for System Administrators | WDT</title>
+  <meta name="description" content="Collect system, performance, network, security, storage, update and crash diagnostics from Windows 10 and 11 in one structured read-only report.">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <meta name="theme-color" content="#05080b">
   <link rel="canonical" href="https://wdt.digital/">
@@ -15,19 +15,19 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Windows Diagnostics Toolkit">
   <meta property="og:locale" content="en_US">
-  <meta property="og:title" content="Windows Diagnostics Tool for PowerShell">
-  <meta property="og:description" content="Responsive read-only Windows diagnostics with local reports, no telemetry and optional Privacy Mode.">
+  <meta property="og:title" content="Windows Diagnostic Collection Tool for System Administrators | WDT">
+  <meta property="og:description" content="Collect system, performance, network, security, storage, update and crash diagnostics from Windows 10 and 11 in one structured read-only report.">
   <meta property="og:url" content="https://wdt.digital/">
   <meta property="og:image" content="https://wdt.digital/assets/social-preview.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="Windows Diagnostics Toolkit — read-only PowerShell diagnostics">
+  <meta property="og:image:alt" content="Windows Diagnostics Toolkit terminal interface">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Windows Diagnostics Tool for PowerShell">
-  <meta name="twitter:description" content="Select read-only checks in a responsive TUI and generate a local Windows support report.">
+  <meta name="twitter:title" content="Windows Diagnostic Collection Tool for System Administrators | WDT">
+  <meta name="twitter:description" content="Collect system, performance, network, security, storage, update and crash diagnostics from Windows 10 and 11 in one structured read-only report.">
   <meta name="twitter:image" content="https://wdt.digital/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="Windows Diagnostics Toolkit — read-only PowerShell diagnostics">
+  <meta name="twitter:image:alt" content="Windows Diagnostics Toolkit terminal interface">
 
   <script type="application/ld+json">
   {
@@ -38,7 +38,7 @@
         "@id": "https://wdt.digital/#website",
         "url": "https://wdt.digital/",
         "name": "Windows Diagnostics Toolkit",
-        "description": "Open-source read-only Windows diagnostics and troubleshooting guides.",
+        "description": "Collect system, performance, network, security, storage, update and crash diagnostics from Windows 10 and 11 in one structured read-only report.",
         "inLanguage": "en"
       },
       {
@@ -47,9 +47,9 @@
         "url": "https://wdt.digital/",
         "name": "Windows Diagnostics Toolkit",
         "applicationCategory": "UtilitiesApplication",
-        "applicationSubCategory": "Windows system diagnostics",
+        "applicationSubCategory": "Windows diagnostic collection",
         "operatingSystem": ["Windows 10", "Windows 11"],
-        "softwareRequirements": "Windows PowerShell 5.1 or PowerShell 7",
+        "softwareRequirements": "Windows PowerShell 5.1 or PowerShell 7+",
         "isAccessibleForFree": true,
         "offers": {
           "@type": "Offer",
@@ -68,18 +68,15 @@
         },
         "image": "https://wdt.digital/assets/social-preview.png",
         "featureList": [
-          "Responsive interactive terminal interface",
-          "Automatic Unicode and ASCII terminal compatibility",
-          "Read-only Windows diagnostics",
+          "Selective module collection",
+          "Command-line automation",
+          "Findings summary",
           "Local TXT and Markdown reports",
-          "Aggregated OK, WARN and ERROR findings summary",
-          "Security posture checks",
-          "Performance and memory snapshot",
-          "Network, DNS, route and proxy context",
-          "Crash, hang and Event Log diagnostics",
-          "Privacy Mode for shared reports"
+          "Privacy Mode",
+          "Windows PowerShell 5.1 and PowerShell 7+",
+          "No agent or third-party dependencies"
         ],
-        "description": "A dependency-free PowerShell toolkit with a responsive interactive TUI that generates local Windows 10 and Windows 11 support reports without changing system settings.",
+        "description": "Collect system, performance, network, security, storage, update and crash diagnostics from Windows 10 and 11 in one structured read-only report.",
         "mainEntityOfPage": {
           "@id": "https://wdt.digital/#website"
         }
@@ -90,26 +87,18 @@
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "Does the toolkit change Windows settings?",
+            "name": "Do I need administrator rights?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. Production diagnostics collect and report state without applying automatic fixes, changing services, editing the registry or reconfiguring the network."
+              "text": "No for the standard collection. Some Windows sources expose less detail without elevation; WDT reports unavailable data and continues where possible."
             }
           },
           {
             "@type": "Question",
-            "name": "Why do I see the ASCII logo?",
+            "name": "Does WDT change system configuration?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Automatic mode uses Unicode only for compatible interactive UTF-8 output. OEM encodings such as cp866, redirected output and unsupported hosts receive the printable ASCII fallback."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Does resizing restart diagnostics?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "No. Resize events redraw the current interface and preserve the current selection. A running diagnostic operation is not restarted."
+              "text": "No. Production diagnostics collect and report state without changing services, registry settings, firewall rules or network configuration."
             }
           },
           {
@@ -117,15 +106,23 @@
             "name": "Where are reports stored?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "The interactive TUI writes to .\\WindowsDiagnosticsReports by default. Command-line mode writes to the current directory unless OutputDirectory is provided. Nothing is uploaded automatically."
+              "text": "The interactive interface writes to .\\WindowsDiagnosticsReports by default. Command-line mode writes to the current directory unless OutputDirectory is provided."
             }
           },
           {
             "@type": "Question",
-            "name": "Does WARN mean the tool failed?",
+            "name": "What does Privacy Mode remove?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. WARN describes observed state that deserves review. A module execution failure is reported separately with a non-zero exit code."
+              "text": "It replaces common host, user, network and device identifiers with typed tokens. Program names, dump-file names and arbitrary sensitive Event Log text can remain."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does WARN mean the collection failed?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. WARN identifies collected state worth reviewing. Module execution failures are reported separately and can produce a non-zero exit code."
             }
           }
         ]
@@ -136,586 +133,276 @@
 </head>
 <body class="landing">
 <a class="skip-link" href="#main-content">Skip to content</a>
-<p class="sr-only" id="site-status" role="status" aria-live="polite" aria-atomic="true">
-</p>
+<p class="sr-only" id="site-status" role="status" aria-live="polite" aria-atomic="true"></p>
 <header class="hdr" data-open="false">
-<div class="hdr-in">
-<a class="brand" href="./" aria-label="Windows Diagnostics Toolkit home">
-<span class="brand-mark">WDT</span>
-<span class="brand-name">Windows Diagnostics Toolkit</span>
-</a>
-<button type="button" class="wnav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">≡</button>
-<nav class="wnav" id="site-nav" aria-label="Primary navigation">
-<a href="#try">Try it</a>
-<a href="#checks">Checks</a>
-<a href="#privacy">Privacy</a>
-<a href="cases/">Guides</a>
-<a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub ↗</a>
-</nav>
-</div>
+  <div class="hdr-in">
+    <a class="brand" href="./" aria-label="Windows Diagnostics Toolkit home">
+      <span class="brand-mark">WDT</span>
+      <span class="brand-name">Windows Diagnostics Toolkit</span>
+    </a>
+    <button type="button" class="wnav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">≡</button>
+    <nav class="wnav" id="site-nav" aria-label="Primary navigation">
+      <a href="#try">Demo</a>
+      <a href="#checks">Diagnostics</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#guides">Guides</a>
+      <a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub ↗</a>
+      <a class="wbtn wbtn--primary nav-run" href="#quick-start">Run diagnostics</a>
+    </nav>
+  </div>
 </header>
 <main id="main-content">
-<section class="sec hero" id="wdt-hero" data-inview="1">
-<div>
-<p class="promptline" data-seq="wait">
-<span class="p">PS C:\WDT&gt;</span> .\Invoke-WindowsDiagnostics.ps1<span class="caret" id="wdt-caret" data-run="0">
-</span>
-</p>
-<h1 class="h-display">
-<span data-seq="wait" style="display: block;">See what Windows is doing.</span> <span data-seq="wait" style="display: block; color: var(--accent);">Change nothing.</span>
-</h1>
-<p class="hint" data-seq="wait">v0.1.0-beta · public prerelease</p>
-<p class="lede" data-seq="wait">A free PowerShell toolkit that reads Windows state and writes local TXT and optional Markdown reports for security, performance, network, crashes, disks, services and updates.</p>
-<p class="hint" data-seq="wait" style="--i: 1;">It changes nothing and uploads nothing automatically. Privacy Mode reduces common identifiers, but review every report before sharing it.</p>
-<div class="row" data-seq="wait" style="margin: var(--s6) 0;">
-<a class="wbtn wbtn--primary" href="#quick-start">&gt; Run diagnostics</a>
-<a class="wbtn" href="#try">Try the interface</a>
-</div>
-<dl class="stats" data-seq="wait">
-<div class="stat">
-<dt>Mode</dt>
-<dd class="on">READ-ONLY</dd>
-</div>
-<div class="stat">
-<dt>Upload</dt>
-<dd>NONE</dd>
-</div>
-<div class="stat">
-<dt>Runtime</dt>
-<dd>PS 5.1 / 7+</dd>
-</div>
-<div class="stat">
-<dt>Platform</dt>
-<dd>WIN 10 / 11</dd>
-</div>
-</dl>
-</div>
-<div class="panel" data-seq="wait">
-<div class="panel-hd">
-<span class="ttl">Report excerpt</span>
-<span class="end">
-<span>SAMPLE / COMPLETE</span>
-</span>
-</div>
-<div class="mono-block">
-<p class="hrow" style="margin: 0 0 var(--s3);">
-<span class="p" style="color: var(--accent);">PS&gt;</span>
-<span class="dt">.\Invoke-WindowsDiagnostics.ps1 -All -PrivacyMode</span>
-</p>
-<p class="hrow" data-seq="wait" style="margin: 0px;">
-<span class="wtag" data-k="ok">[OK]</span>
-<span class="nm">System</span>
-<span class="dt">build 22631 · uptime 6d</span>
-</p>
-<p class="hrow" data-seq="wait" style="margin: 0px;">
-<span class="wtag" data-k="warn">[WARN]</span>
-<span class="nm">Security posture</span>
-<span class="dt">Firewall: Public profile off</span>
-</p>
-<p class="hrow" data-seq="wait" style="margin: 0px;">
-<span class="wtag" data-k="warn">[WARN]</span>
-<span class="nm">Disk health</span>
-<span class="dt">C: 6% free (limit 10%)</span>
-</p>
-<p class="hrow" data-seq="wait" style="margin: 0px;">
-<span class="wtag" data-k="err">[ERROR]</span>
-<span class="nm">Windows Update</span>
-<span class="dt">restart pending since 24 Jul</span>
-</p>
-<p class="hrow" data-seq="wait" style="margin: var(--s3) 0 0;">
-<span class="wtag" data-k="dim">--</span>
-<span class="dt">2 warnings · 1 error · elapsed 4.1s</span>
-</p>
-<p class="hrow" data-seq="wait" style="margin: 0px; --i: 1;">
-<span class="wtag" data-k="dim">&gt;</span>
-<span class="dt">.\WindowsDiagnosticsReport-20260731-113052.txt</span>
-</p>
-</div>
-<p class="panel-ft">The findings summary sits at the top of the file, before the detail.</p>
-</div>
-</section>
-<div class="band" id="try">
-<section class="sec">
-<div class="sec-hd">
-<span class="kicker">01 / Interface</span>
-<span class="kicker-meta">Simulation · nothing runs on your PC</span>
-</div>
-<h2>Tick what to look at. Press run.</h2>
-<p class="lede">Interactive simulation based on the current WDT terminal interface. Nothing runs on your PC. Results, dates, paths and values below are sample/demo data.</p>
-<div class="panel term" id="tui-simulation" data-tab="checks" data-phase="idle">
-<div class="panel-hd">
-<span class="ttl">WDT / interactive dashboard</span>
-<span class="end">
-<span class="num" data-tui-count>7 of 10 selected</span>
-<span data-tui-phase>System ready</span>
-</span>
-</div>
-<div class="tabs" data-tui-tabs>
-<button type="button" class="tab" id="wdt-tab-checks" data-tui-tab="checks" aria-controls="wdt-p-checks">Checks</button>
-<button type="button" class="tab" id="wdt-tab-options" data-tui-tab="options" aria-controls="wdt-p-options">Options</button>
-<button type="button" class="tab" id="wdt-tab-output" data-tui-tab="output" aria-controls="wdt-p-output">Output</button>
-</div>
-<div class="term-body">
-<div class="tpanel" data-panel="checks" id="wdt-p-checks" aria-labelledby="wdt-tab-checks">
-<p class="col-label">Select diagnostics</p>
-<div class="sel">
-<button type="button" class="sel-row" data-tui-module="System" data-recommended="true" aria-pressed="true" data-state="" tabindex="0">
-<span class="mark">[x]</span>
-<span class="sel-name">System information</span>
-<span class="sel-tag">RECOMMENDED</span>
-</button>
-<button type="button" class="sel-row" data-tui-module="Security" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
-<span class="mark">[x]</span>
-<span class="sel-name">Security posture</span>
-<span class="sel-tag">RECOMMENDED</span>
-</button>
-<button type="button" class="sel-row" data-tui-module="Performance" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
-<span class="mark">[x]</span>
-<span class="sel-name">Performance snapshot</span>
-<span class="sel-tag">RECOMMENDED</span>
-</button>
-<button type="button" class="sel-row" data-tui-module="Network" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
-<span class="mark">[x]</span>
-<span class="sel-name">Network context</span>
-<span class="sel-tag">RECOMMENDED</span>
-</button>
-<button type="button" class="sel-row" data-tui-module="Time" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
-<span class="mark">[x]</span>
-<span class="sel-name">Time synchronization</span>
-<span class="sel-tag">RECOMMENDED</span>
-</button>
-<button type="button" class="sel-row" data-tui-module="Disk" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
-<span class="mark">[x]</span>
-<span class="sel-name">Storage status</span>
-<span class="sel-tag">RECOMMENDED</span>
-</button>
-<button type="button" class="sel-row" data-tui-module="Crashes" data-recommended="false" aria-pressed="false" data-state="" tabindex="-1">
-<span class="mark">[ ]</span>
-<span class="sel-name">Crashes and hangs</span>
-<span class="sel-tag">OPTIONAL</span>
-</button>
-<button type="button" class="sel-row" data-tui-module="Events" data-recommended="false" aria-pressed="false" data-state="" tabindex="-1">
-<span class="mark">[ ]</span>
-<span class="sel-name">Event logs</span>
-<span class="sel-tag">OPTIONAL</span>
-</button>
-<button type="button" class="sel-row" data-tui-module="Services" data-recommended="false" aria-pressed="false" data-state="" tabindex="-1">
-<span class="mark">[ ]</span>
-<span class="sel-name">Services and startup</span>
-<span class="sel-tag">OPTIONAL</span>
-</button>
-<button type="button" class="sel-row" data-tui-module="Updates" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1">
-<span class="mark">[x]</span>
-<span class="sel-name">Windows Update</span>
-<span class="sel-tag">RECOMMENDED</span>
-</button>
-</div>
-</div>
-<div class="tpanel" data-panel="options" id="wdt-p-options" aria-labelledby="wdt-tab-options">
-<p class="col-label">Options</p>
-<div class="sel">
-<button type="button" class="sel-row" data-tui-option="privacy" aria-pressed="true">
-<span class="mark">[x]</span>
-<span class="sel-name">Privacy Mode</span>
-</button>
-<button type="button" class="sel-row" data-tui-option="markdown" aria-pressed="true">
-<span class="mark">[x]</span>
-<span class="sel-name">Markdown export</span>
-</button>
-<p class="static-row">
-<span class="mark">&gt;</span>
-<span>Output: .\WindowsDiagnosticsReports</span>
-</p>
-</div>
-<p class="prose prose--sm" style="margin-top: var(--s5);">Privacy Mode swaps your computer name, user name and addresses for placeholders. Markdown export adds a second copy that pastes cleanly into an issue.</p>
-</div>
-<div class="tpanel" data-panel="output" id="wdt-p-output" aria-labelledby="wdt-tab-output">
-<p class="col-label">Output</p>
-<div class="prog">
-<span class="ascii" data-tui-progress>[░░░░░░░░░░░░] idle</span>
-<span class="rail" aria-hidden="true">
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-<i data-on="0">
-</i>
-</span>
-</div>
-<div class="log" role="log" aria-live="off" data-tui-log>
-<div class="log-row" data-new="0">
-<span class="wtag" data-k="dim">&gt;</span>
-<span class="m">Ready. Toggle the checks you want, then press run.</span>
-</div>
-</div>
-</div>
-</div>
-<div class="term-run">
-<button type="button" class="wbtn wbtn--primary" data-tui-action="run">ENTER · RUN</button>
-<button type="button" class="wbtn wbtn--mini" data-tui-action="all">A · all</button>
-<button type="button" class="wbtn wbtn--mini" data-tui-action="recommended">R · recommended</button>
-<button type="button" class="wbtn wbtn--mini" data-tui-action="reset">ESC · reset</button>
-<span class="count num" data-tui-count>7 of 10 selected</span>
-<p class="sr-only" data-tui-live role="status" aria-live="polite" aria-atomic="true">
-</p>
-</div>
-</div>
-<div class="real-shots" data-reveal="scroll">
-<figure class="real-shot">
-<a href="assets/tui-wide-real.png">
-<img src="assets/tui-wide-real.png" width="1540" height="748" loading="lazy" decoding="async" alt="Real Windows Diagnostics Toolkit wide terminal dashboard">
-</a>
-<figcaption>Real WDT interface · <a href="assets/tui-wide-real.png">open full-size image</a>
-</figcaption>
-</figure>
-<figure class="real-shot">
-<a href="assets/tui-result-real.png">
-<img src="assets/tui-result-real.png" width="1538" height="747" loading="lazy" decoding="async" alt="Real Windows Diagnostics Toolkit completed report screen">
-</a>
-<figcaption>Real completed run · <a href="assets/tui-result-real.png">open full-size image</a>
-</figcaption>
-</figure>
-</div>
-<div class="sev" data-reveal="scroll">
-<div>
-<span class="k wtag" data-k="ok">[OK]</span>
-<p>Checked and normal. Nothing for you to do.</p>
-</div>
-<div>
-<span class="k wtag" data-k="warn">[WARN]</span>
-<p>Worth a look, not a failure — the report says where to look.</p>
-</div>
-<div>
-<span class="k wtag" data-k="err">[ERROR]</span>
-<p>A check could not finish, or Windows reported a real fault.</p>
-</div>
-</div>
-</section>
-</div>
-<section class="sec">
-<span class="kicker" data-reveal="scroll">02 / Workflow</span>
-<h2 data-reveal="scroll">Three steps, one file at the end.</h2>
-<div class="flow" data-reveal="scroll">
-<div class="flow-step" data-reveal="scroll" style="--i: 1;">
-<p class="flow-n">STEP 01 · SELECT</p>
-<h3>Choose checks</h3>
-<p class="prose">Ten areas are listed and the sensible ones are already ticked, so pressing run straight away is fine.</p>
-<p class="hint">↑ ↓ navigate · Space / Enter toggle</p>
-</div>
-<div class="flow-step" data-reveal="scroll" style="--i: 2;">
-<p class="flow-n">STEP 02 · RUN</p>
-<h3>Collect locally</h3>
-<p class="prose">It reads state Windows already keeps. No fixes are applied, no settings touched, nothing leaves the machine.</p>
-<p class="hint">A all · R recommended · Enter on Run</p>
-</div>
-<div class="flow-step" data-reveal="scroll" style="--i: 3;">
-<p class="flow-n">STEP 03 · REVIEW</p>
-<h3>Read the findings</h3>
-<p class="prose">Elapsed time, report paths and the count of items worth reviewing appear before the detail.</p>
-<p class="hint">Enter menu · Esc exit</p>
-</div>
-</div>
-</section>
-<div class="band">
-<section class="sec split" id="quick-start">
-<div>
-<span class="kicker" data-reveal="scroll">03 / Quick start</span>
-<h2 data-reveal="scroll">Run the verified beta.</h2>
-<p class="prose" data-reveal="scroll" style="--i: 1;">The first public beta is available as a GitHub prerelease. The bootstrap is fixed to <code>v0.1.0-beta</code> and verifies the release ZIP before execution.</p>
-<ul class="list list--mono" data-reveal="scroll" style="margin-top: var(--s5);">
-<li>
-<span class="b wtag" data-k="ok">[BETA]</span>v0.1.0-beta · public prerelease</li>
-<li>
-<span class="b wtag" data-k="ok">[HASH]</span><span class="release-hash">SHA-256: ee741a450fa20b0903adec858af446806cba74666fde0f98b1bde85dc0188e0f</span></li>
-<li>
-<span class="b wtag" data-k="ok">[FIXED]</span>ZIP and checksum come from one tagged GitHub Release</li>
-</ul>
-<p class="note"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta">View the GitHub prerelease ↗</a></p>
-</div>
-<div>
-<div class="panel">
-<div class="panel-hd">
-<span class="ttl">PowerShell</span>
-<span class="end">
-<button type="button" class="wbtn wbtn--mini" data-copy-target="quick-command" data-copy-status="site-status" aria-label="Copy the beta bootstrap command">COPY</button>
-</span>
-</div>
-<pre class="mono-block" id="quick-command">
-<span class="p">PS&gt;</span> irm https://wdt.digital/run.ps1 | iex</pre>
-<p class="panel-ft">
-<span class="wtag" data-k="ok">VERIFIED</span> · ZIP checked before extraction</p>
-</div>
-<p class="note">The release ZIP is verified with SHA-256 before extraction. The one-line command still requires trust in the bootstrap served by GitHub Pages. Inspect run.ps1 first on sensitive systems.</p>
-<div class="panel" style="margin-top: var(--s5);">
-<div class="panel-hd"><span class="ttl">Inspect first</span></div>
-<pre class="mono-block"><span class="p">PS&gt;</span> irm https://wdt.digital/run.ps1 -OutFile .\wdt-run.ps1
+  <section class="sec hero" id="wdt-hero" data-inview="1">
+    <div>
+      <p class="promptline" data-seq="wait"><span class="p">PS C:\WDT&gt;</span> .\Invoke-WindowsDiagnostics.ps1<span class="caret" id="wdt-caret" data-run="0"></span></p>
+      <h1 class="h-display">
+        <span data-seq="wait" style="display: block;">One read-only pass.</span>
+        <span data-seq="wait" style="display: block; color: var(--accent);">One diagnostic report.</span>
+      </h1>
+      <p class="lede" data-seq="wait">Collect the Windows state and recent failure context needed for initial troubleshooting across system, performance, network, security, storage, services and updates.</p>
+      <p class="prose" data-seq="wait" style="--i: 1;">Built for system administrators and support engineers who need consistent evidence before changing the system.</p>
+      <div class="hero-actions" data-seq="wait">
+        <a class="wbtn wbtn--primary" href="#quick-start">Run diagnostics</a>
+        <p class="hero-links"><a href="sample-report/">View a sample report</a> <span aria-hidden="true">·</span> <a href="https://github.com/0x0bug/windows-diagnostics-toolkit">Review the source</a></p>
+      </div>
+      <p class="trust-line" data-seq="wait">READ-ONLY · LOCAL REPORTS · NO AGENT · PS 5.1 / 7+ · WINDOWS 10 / 11</p>
+    </div>
+    <div class="panel" data-seq="wait">
+      <div class="panel-hd">
+        <span class="ttl">Report excerpt</span>
+        <span class="end">SAMPLE DATA</span>
+      </div>
+      <div class="mono-block">
+        <p class="hrow" style="margin: 0 0 var(--s3);"><span class="p" style="color: var(--accent);">PS&gt;</span><span class="dt">.\Invoke-WindowsDiagnostics.ps1 -All -PrivacyMode</span></p>
+        <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="warn">[WARN]</span><span class="nm">Security</span><span class="dt">BitLocker volume not protected</span></p>
+        <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="warn">[WARN]</span><span class="nm">Time</span><span class="dt">Local clock source reported</span></p>
+        <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="warn">[WARN]</span><span class="nm">Services</span><span class="dt">One or more services need attention</span></p>
+        <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="ok">[OK]</span><span class="nm">Network</span><span class="dt">No findings</span></p>
+        <p class="hrow" data-seq="wait" style="margin: var(--s3) 0 0;"><span class="wtag" data-k="dim">--</span><span class="dt">0 errors · 3 warnings · 7 OK modules</span></p>
+        <p class="hrow" data-seq="wait" style="margin: 0; --i: 1;"><span class="wtag" data-k="dim">&gt;</span><span class="dt">.\WindowsDiagnosticsReport-20260712-101530.txt</span></p>
+      </div>
+      <p class="panel-ft">Findings summary appears before detailed evidence.</p>
+    </div>
+  </section>
+
+  <div class="band" id="try">
+    <section class="sec">
+      <div class="sec-hd">
+        <span class="kicker">Interactive demo</span>
+        <span class="kicker-meta">Browser simulation</span>
+      </div>
+      <h2>Select the diagnostic modules relevant to the incident.</h2>
+      <p class="lede">Preview the current WDT workflow and the structured output produced for a troubleshooting session. This simulation runs only in the browser.</p>
+      <p class="workflow-line">Select modules → Collect locally → Review one report</p>
+      <noscript>
+        <p class="note">The interactive demo requires JavaScript. View the <a href="assets/tui-wide-real.png">real screenshot</a> or <a href="sample-report/">sample report</a> instead.</p>
+      </noscript>
+      <div class="panel term" id="tui-simulation" data-tab="checks" data-phase="idle">
+        <div class="panel-hd">
+          <span class="ttl">WDT / interactive dashboard</span>
+          <span class="end"><span class="num" data-tui-count>7 of 10 selected</span><span data-tui-phase>System ready</span></span>
+        </div>
+        <div class="tabs" data-tui-tabs>
+          <button type="button" class="tab" id="wdt-tab-checks" data-tui-tab="checks" aria-controls="wdt-p-checks">Checks</button>
+          <button type="button" class="tab" id="wdt-tab-options" data-tui-tab="options" aria-controls="wdt-p-options">Options</button>
+          <button type="button" class="tab" id="wdt-tab-output" data-tui-tab="output" aria-controls="wdt-p-output">Output</button>
+        </div>
+        <div class="term-body">
+          <div class="tpanel" data-panel="checks" id="wdt-p-checks" aria-labelledby="wdt-tab-checks">
+            <p class="col-label">Select diagnostics</p>
+            <div class="sel">
+              <button type="button" class="sel-row" data-tui-module="System" data-recommended="true" aria-pressed="true" data-state="" tabindex="0"><span class="mark">[x]</span><span class="sel-name">System information</span><span class="sel-tag">RECOMMENDED</span></button>
+              <button type="button" class="sel-row" data-tui-module="Security" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1"><span class="mark">[x]</span><span class="sel-name">Security posture</span><span class="sel-tag">RECOMMENDED</span></button>
+              <button type="button" class="sel-row" data-tui-module="Performance" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1"><span class="mark">[x]</span><span class="sel-name">Performance snapshot</span><span class="sel-tag">RECOMMENDED</span></button>
+              <button type="button" class="sel-row" data-tui-module="Network" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1"><span class="mark">[x]</span><span class="sel-name">Network context</span><span class="sel-tag">RECOMMENDED</span></button>
+              <button type="button" class="sel-row" data-tui-module="Time" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1"><span class="mark">[x]</span><span class="sel-name">Time synchronization</span><span class="sel-tag">RECOMMENDED</span></button>
+              <button type="button" class="sel-row" data-tui-module="Disk" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1"><span class="mark">[x]</span><span class="sel-name">Storage status</span><span class="sel-tag">RECOMMENDED</span></button>
+              <button type="button" class="sel-row" data-tui-module="Crashes" data-recommended="false" aria-pressed="false" data-state="" tabindex="-1"><span class="mark">[ ]</span><span class="sel-name">Crashes and hangs</span><span class="sel-tag">OPTIONAL</span></button>
+              <button type="button" class="sel-row" data-tui-module="Events" data-recommended="false" aria-pressed="false" data-state="" tabindex="-1"><span class="mark">[ ]</span><span class="sel-name">Event logs</span><span class="sel-tag">OPTIONAL</span></button>
+              <button type="button" class="sel-row" data-tui-module="Services" data-recommended="false" aria-pressed="false" data-state="" tabindex="-1"><span class="mark">[ ]</span><span class="sel-name">Services and startup</span><span class="sel-tag">OPTIONAL</span></button>
+              <button type="button" class="sel-row" data-tui-module="Updates" data-recommended="true" aria-pressed="true" data-state="" tabindex="-1"><span class="mark">[x]</span><span class="sel-name">Windows Update</span><span class="sel-tag">RECOMMENDED</span></button>
+            </div>
+          </div>
+          <div class="tpanel" data-panel="options" id="wdt-p-options" aria-labelledby="wdt-tab-options">
+            <p class="col-label">Options</p>
+            <div class="sel">
+              <button type="button" class="sel-row" data-tui-option="privacy" aria-pressed="true"><span class="mark">[x]</span><span class="sel-name">Privacy Mode</span></button>
+              <button type="button" class="sel-row" data-tui-option="markdown" aria-pressed="true"><span class="mark">[x]</span><span class="sel-name">Markdown export</span></button>
+              <p class="static-row"><span class="mark">&gt;</span><span>Output: .\WindowsDiagnosticsReports</span></p>
+            </div>
+            <p class="prose prose--sm" style="margin-top: var(--s5);">Privacy Mode replaces common identifiers. Markdown export adds another format.</p>
+          </div>
+          <div class="tpanel" data-panel="output" id="wdt-p-output" aria-labelledby="wdt-tab-output">
+            <p class="col-label">Output</p>
+            <div class="prog">
+              <span class="ascii" data-tui-progress>[░░░░░░░░░░░░] idle</span>
+              <span class="rail" aria-hidden="true"><i data-on="0"></i><i data-on="0"></i><i data-on="0"></i><i data-on="0"></i><i data-on="0"></i><i data-on="0"></i><i data-on="0"></i><i data-on="0"></i><i data-on="0"></i><i data-on="0"></i><i data-on="0"></i><i data-on="0"></i></span>
+            </div>
+            <div class="log" role="log" aria-live="off" data-tui-log><div class="log-row" data-new="0"><span class="wtag" data-k="dim">&gt;</span><span class="m">Ready.</span></div></div>
+          </div>
+        </div>
+        <div class="term-run">
+          <button type="button" class="wbtn wbtn--primary" data-tui-action="run">ENTER · RUN</button>
+          <button type="button" class="wbtn wbtn--mini" data-tui-action="all">A · all</button>
+          <button type="button" class="wbtn wbtn--mini" data-tui-action="recommended">R · recommended</button>
+          <button type="button" class="wbtn wbtn--mini" data-tui-action="reset">ESC · reset</button>
+          <span class="count num" data-tui-count>7 of 10 selected</span>
+          <p class="sr-only" data-tui-live role="status" aria-live="polite" aria-atomic="true"></p>
+        </div>
+      </div>
+      <p class="tui-hints"><span>↑ ↓ navigate · Space / Enter toggle</span><span>A all · R recommended · Enter on Run</span></p>
+      <p class="severity-line"><span class="wtag" data-k="ok">OK</span> — normal · <span class="wtag" data-k="warn">WARN</span> — review recommended · <span class="wtag" data-k="err">ERROR</span> — collection failed or Windows reported a fault</p>
+      <details class="screenshot-details">
+        <summary>View real terminal screenshots</summary>
+        <div class="real-shots">
+          <figure class="real-shot"><a href="assets/tui-wide-real.png"><img src="assets/tui-wide-real.png" width="1540" height="748" loading="lazy" decoding="async" alt="Real Windows Diagnostics Toolkit wide terminal dashboard"></a><figcaption>Real WDT interface · <a href="assets/tui-wide-real.png">open full-size image</a></figcaption></figure>
+          <figure class="real-shot"><a href="assets/tui-result-real.png"><img src="assets/tui-result-real.png" width="1538" height="747" loading="lazy" decoding="async" alt="Real Windows Diagnostics Toolkit completed report screen"></a><figcaption>Real completed run · <a href="assets/tui-result-real.png">open full-size image</a></figcaption></figure>
+        </div>
+      </details>
+    </section>
+  </div>
+
+  <section class="sec" aria-labelledby="automation-title">
+    <h2 id="automation-title">Command line and automation</h2>
+    <p class="lede">Run the same collection without the interactive interface, select only the required modules and write reports to a predictable location.</p>
+    <pre class="mono-block"><span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1 -All -PrivacyMode -ExportMarkdown
+<span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1 -Module System,Network -OutputDirectory .\Reports</pre>
+    <p class="prose">No installer, no agent and no third-party modules. Administrator rights are optional. Findings do not change the exit code; a non-zero exit code indicates an execution failure.</p>
+    <p class="note"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/usage.md">View command-line usage →</a></p>
+  </section>
+
+  <div class="band">
+    <section class="sec" id="quick-start">
+      <div class="sec-hd"><span class="kicker">Quick start</span><span class="kicker-meta">v0.1.0-beta</span></div>
+      <h2>Run WDT.</h2>
+      <div class="run-methods">
+        <article class="panel run-method">
+          <div class="panel-hd"><span class="ttl">Verified release</span><span class="end">RECOMMENDED / MANAGED SYSTEMS</span></div>
+          <div class="run-method-body">
+            <p>Download the tagged release archive and checksum from GitHub, verify SHA-256 and inspect the extracted files before execution.</p>
+            <p class="release-links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.1.0-beta/windows-diagnostics-toolkit-v0.1.0-beta.zip">Download ZIP</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.1.0-beta/windows-diagnostics-toolkit-v0.1.0-beta.zip.sha256">Download checksum</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta">Release page</a></p>
+            <p class="hash-value"><span class="wtag" data-k="ok">SHA-256</span> ee741a450fa20b0903adec858af446806cba74666fde0f98b1bde85dc0188e0f</p>
+            <p class="panel-ft">Release ZIP verified before extraction</p>
+          </div>
+        </article>
+        <article class="panel run-method">
+          <div class="panel-hd"><span class="ttl">One-line bootstrap</span><span class="end">GITHUB PAGES</span></div>
+          <div class="run-method-body">
+            <div class="copy-row"><span>PowerShell</span><button type="button" class="wbtn wbtn--mini" data-copy-target="quick-command" data-copy-status="site-status" aria-label="Copy the bootstrap command">COPY</button></div>
+            <pre class="mono-block" id="quick-command"><span class="p">PS&gt;</span> irm https://wdt.digital/run.ps1 | iex</pre>
+            <p class="warning-note"><span class="wtag" data-k="warn">[!]</span> Requires trust in run.ps1 served through GitHub Pages. Inspect it first on managed or sensitive systems.</p>
+          </div>
+        </article>
+      </div>
+      <div class="run-details">
+        <details><summary>Inspect the bootstrap</summary><pre class="mono-block"><span class="p">PS&gt;</span> irm https://wdt.digital/run.ps1 -OutFile .\wdt-run.ps1
 <span class="p">PS&gt;</span> notepad .\wdt-run.ps1
-<span class="p">PS&gt;</span> .\wdt-run.ps1</pre>
-</div>
-<div class="panel" style="margin-top: var(--s5);">
-<div class="panel-hd"><span class="ttl">Clone for development</span></div>
-<pre class="mono-block"><span class="p">PS&gt;</span> git clone https://github.com/0x0bug/windows-diagnostics-toolkit.git
+<span class="p">PS&gt;</span> .\wdt-run.ps1</pre></details>
+        <details><summary>Clone for development</summary><pre class="mono-block"><span class="p">PS&gt;</span> git clone https://github.com/0x0bug/windows-diagnostics-toolkit.git
 <span class="p">PS&gt;</span> cd windows-diagnostics-toolkit
-<span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1</pre>
-<p class="panel-ft">Recommended for source inspection and development</p>
-</div>
-</div>
-</section>
-</div>
-<section class="sec" id="checks">
-<div class="sec-hd" data-reveal="scroll">
-<span class="kicker">04 / Diagnostics</span>
-<span class="kicker-meta">10 modules / 6 areas</span>
-</div>
-<h2 data-reveal="scroll">One report. Ten modules.</h2>
-<p class="lede" data-reveal="scroll" style="--i: 1;">Collect broad context, or run only the area that matches your problem. Each row links to a guide written for the symptom rather than for the module.</p>
-<div class="tw" data-reveal="scroll" style="--i: 2;">
-<div class="matrix" role="table" aria-label="Diagnostic areas and the guide for each">
-<div class="mrow mhead" role="row">
-<span role="columnheader">Area</span>
-<span role="columnheader">Modules</span>
-<span role="columnheader">Question it answers</span>
-<span role="columnheader">
-<span class="sr-only">Guide</span>
-</span>
-</div>
-<div class="mrow" role="row">
-<span class="area" role="rowheader">System + performance</span>
-<span class="mods" role="cell">OS · CPU · memory · GPU · uptime · pagefile · top processes</span>
-<span class="ans" role="cell">Why the machine feels slow or runs out of memory.</span>
-<span role="cell">
-<a class="go" href="cases/windows-high-memory-usage.html">GUIDE ↗</a>
-</span>
-</div>
-<div class="mrow" role="row">
-<span class="area" role="rowheader">Security posture</span>
-<span class="mods" role="cell">Defender · Firewall · Secure Boot · TPM · BitLocker</span>
-<span class="ans" role="cell">Whether the protections you expect are actually switched on.</span>
-<span role="cell">
-<a class="go" href="cases/windows-firewall-disabled.html">GUIDE ↗</a>
-</span>
-</div>
-<div class="mrow" role="row">
-<span class="area" role="rowheader">Network context</span>
-<span class="mods" role="cell">Adapters · DNS · DHCP · routes · gateways · proxy · reachability</span>
-<span class="ans" role="cell">Where traffic really goes before you blame the router.</span>
-<span role="cell">
-<a class="go" href="cases/windows-network-routes.html">GUIDE ↗</a>
-</span>
-</div>
-<div class="mrow" role="row">
-<span class="area" role="rowheader">Crashes + Event Logs</span>
-<span class="mods" role="cell">Application errors · hangs · BugCheck events · dump metadata</span>
-<span class="ans" role="cell">What Windows recorded when a program or the PC fell over.</span>
-<span role="cell">
-<a class="go" href="cases/windows-application-crashes.html">GUIDE ↗</a>
-</span>
-</div>
-<div class="mrow" role="row">
-<span class="area" role="rowheader">Disk health</span>
-<span class="mods" role="cell">Physical disk state · volumes · free-space warnings</span>
-<span class="ans" role="cell">How much space is left and whether a drive reports trouble.</span>
-<span role="cell">
-<a class="go" href="cases/windows-disk-health-low-space.html">GUIDE ↗</a>
-</span>
-</div>
-<div class="mrow" role="row">
-<span class="area" role="rowheader">Time + Windows Update</span>
-<span class="mods" role="cell">W32Time · update services · recent updates · reboot indicators</span>
-<span class="ans" role="cell">Whether the clock or a pending update is holding something back.</span>
-<span role="cell">
-<a class="go" href="cases/windows-update-pending-reboot.html">GUIDE ↗</a>
-</span>
-</div>
-</div>
-</div>
-</section>
-<div class="band" id="privacy">
-<section class="sec split">
-<div>
-<span class="kicker" data-reveal="scroll">05 / Privacy</span>
-<h2 data-reveal="scroll">Local first. Share only what you choose.</h2>
-<p class="prose" data-reveal="scroll" style="--i: 1;">Reports stay in the folder you picked. With Privacy Mode on, identifying values become stable placeholders, so the report stays readable without naming you or your machine.</p>
-<dl class="claims" data-reveal="scroll" style="--i: 2;">
-<div class="claim">
-<dt>
-<span class="wtag" data-k="ok">[x]</span> Read-only</dt>
-<dd>No registry, service, firewall, DNS or configuration changes.</dd>
-</div>
-<div class="claim">
-<dt>
-<span class="wtag" data-k="ok">[x]</span> No telemetry</dt>
-<dd>No upload, remote collection or tracking endpoint.</dd>
-</div>
-<div class="claim">
-<dt>
-<span class="wtag" data-k="ok">[x]</span> Auditable</dt>
-<dd>Source code, validation policy and tests are public.</dd>
-</div>
-</dl>
-</div>
-<div>
-<div class="diff">
-<div data-reveal="scroll">
-<h3>Collected</h3>
-<pre>ComputerName : <span class="was">DESKTOP-4F1QK</span>
+<span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1</pre></details>
+        <details><summary>Release integrity</summary><pre class="mono-block"><span class="p">PS&gt;</span> $expected = 'ee741a450fa20b0903adec858af446806cba74666fde0f98b1bde85dc0188e0f'
+<span class="p">PS&gt;</span> (Get-FileHash .\windows-diagnostics-toolkit-v0.1.0-beta.zip -Algorithm SHA256).Hash.ToLowerInvariant() -eq $expected</pre><p>The tagged release binds the archive to a published version. SHA-256 detects whether the downloaded ZIP differs from the expected bytes; it does not establish who produced the file. The ZIP checksum does not authenticate bootstrap code already passed to <code>iex</code>.</p></details>
+      </div>
+    </section>
+  </div>
+
+  <section class="sec" id="checks">
+    <div class="sec-hd"><span class="kicker">Diagnostics</span><span class="kicker-meta">10 selectors / 8 groups</span></div>
+    <h2>Select diagnostic scope.</h2>
+    <div class="diagnostic-grid">
+      <article class="diagnostic-card"><h3>System</h3><p class="module-selector"><code>-Module System</code></p><p>Windows version and build, hardware, uptime and core system context.</p><p class="purpose">Establish the machine baseline before deeper analysis.</p></article>
+      <article class="diagnostic-card"><h3>Performance</h3><p class="module-selector"><code>-Module Performance</code></p><p>CPU, memory, pagefile, pressure indicators and top processes.</p><p class="purpose">Identify current resource pressure.</p></article>
+      <article class="diagnostic-card"><h3>Network</h3><p class="module-selector"><code>-Module Network</code></p><p>Adapters, IP, DNS, DHCP, routes, gateways, proxy and reachability.</p><p class="purpose">Verify the actual traffic path and configuration.</p></article>
+      <article class="diagnostic-card"><h3>Security</h3><p class="module-selector"><code>-Module Security</code></p><p>Defender, Firewall, Secure Boot, TPM and BitLocker.</p><p class="purpose">Confirm the observable state of Windows protections.</p></article>
+      <article class="diagnostic-card"><h3>Storage</h3><p class="module-selector"><code>-Module Disk</code></p><p>Physical disks, volumes, free space and warning thresholds.</p><p class="purpose">Detect capacity pressure and relevant storage state.</p></article>
+      <article class="diagnostic-card"><h3>Failures</h3><p class="module-selector"><code>-Module Crashes,Events</code></p><p>Crashes, hangs, BugChecks, Event Log evidence and dump metadata.</p><p class="purpose">Collect recent failure evidence from multiple sources.</p></article>
+      <article class="diagnostic-card"><h3>Services and startup</h3><p class="module-selector"><code>-Module Services</code></p><p>Services, startup entries and scheduled tasks.</p><p class="purpose">Review execution and startup state.</p></article>
+      <article class="diagnostic-card"><h3>Updates and time</h3><p class="module-selector"><code>-Module Updates,Time</code></p><p>Updates, pending reboot indicators and Windows Time state.</p><p class="purpose">Detect conditions affecting deployment, authentication or behaviour.</p></article>
+    </div>
+  </section>
+
+  <section class="sec findings" aria-labelledby="findings-title">
+    <div><span class="kicker">Signal rules</span><h2 id="findings-title">Findings, not a log dump.</h2><p class="lede">Every report opens with a findings summary. Severity is based on documented signal rules rather than the raw Windows event level alone.</p><p class="note"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/usage.md#findings-and-exit-codes">How findings are classified →</a></p></div>
+    <ul class="list findings-list">
+      <li>A single Critical or Error event does not create a finding on its own.</li>
+      <li>ERROR is reserved for repeated recent BugChecks.</li>
+      <li>Auto + Stopped alone is Indeterminate — trigger-start services idle normally.</li>
+      <li>Repeated evidence is grouped with counts and first/last timestamps.</li>
+    </ul>
+  </section>
+
+  <div class="band" id="privacy">
+    <section class="sec split">
+      <div>
+        <span class="kicker">Privacy Mode</span>
+        <h2>Prepare reports for review.</h2>
+        <p class="prose">Generate a report that can be attached to a ticket or shared with another engineer without exposing common host, user and network identifiers.</p>
+        <dl class="claims">
+          <div class="claim"><dt><span class="wtag" data-k="ok">[x]</span> Read-only</dt><dd>Collects state without changing Windows configuration.</dd></div>
+          <div class="claim"><dt><span class="wtag" data-k="ok">[x]</span> No telemetry</dt><dd>No tracking or remote collection endpoint.</dd></div>
+          <div class="claim"><dt><span class="wtag" data-k="ok">[x]</span> Auditable</dt><dd>Source, tests and security policy are public.</dd></div>
+        </dl>
+      </div>
+      <div>
+        <div class="diff">
+          <div><h3>Collected</h3><pre>ComputerName : <span class="was">DESKTOP-4F1QK</span>
 UserName     : <span class="was">a.ivanov</span>
 IPv4Address  : <span class="was">192.168.1.24</span>
 MacAddress   : <span class="was">B4-2E-99-0C-7A-11</span>
-DeviceId     : <span class="was">S-1-5-21-3402…</span>
-</pre>
-</div>
-<div data-reveal="scroll" style="--i: 2;">
-<h3>In the shared report</h3>
-<pre>ComputerName : <span class="now">&lt;HOST-1&gt;</span>
+DeviceId     : <span class="was">S-1-5-21-3402…</span></pre></div>
+          <div><h3>In the shared report</h3><pre>ComputerName : <span class="now">&lt;HOST-1&gt;</span>
 UserName     : <span class="now">&lt;USER-1&gt;</span>
 IPv4Address  : <span class="now">&lt;IP-1&gt;</span>
 MacAddress   : <span class="now">&lt;MAC-1&gt;</span>
-DeviceId     : <span class="now">&lt;ID-1&gt;</span>
-</pre>
-</div>
-</div>
-<p class="note">
-<span class="wtag" data-k="warn">[!]</span> Program and dump-file names stay visible — that is the useful part. Event Log messages can still contain something personal, so read the file before posting it anywhere.</p>
-</div>
-</section>
-</div>
-<section class="sec">
-<div class="sec-hd" data-reveal="scroll">
-<span class="kicker">06 / Guides</span>
-<a class="kicker-meta" href="cases/">All guides ↗</a>
-</div>
-<h2 data-reveal="scroll">Start from the symptom.</h2>
-<p class="lede" data-reveal="scroll" style="--i: 1;">Each guide names the check to run, the evidence it produces, how to read it, and what the toolkit deliberately leaves alone.</p>
-<div class="gfeat" data-reveal="scroll" style="--i: 2;">
-<a class="gcard" href="cases/windows-diagnostic-report-for-tech-support.html">
-<span class="n">01 · Support report</span>
-<h3>Collect a diagnostic report for tech support</h3>
-<p>Produce one redacted TXT and Markdown file you can attach to a support request.</p>
-<span class="go">Open guide ↗</span>
-</a>
-<a class="gcard" href="cases/windows-application-crashes.html">
-<span class="n">02 · Application crash logs</span>
-<h3>Find Windows application crash logs</h3>
-<p>Confirm repeated failures with error, hang, BugCheck and dump evidence.</p>
-<span class="go">Open guide ↗</span>
-</a>
-</div>
-<div class="glist" style="margin-top: var(--s6);">
-<a class="grow" href="cases/windows-high-memory-usage.html">
-<span class="n">03</span>
-<span class="t">Windows is using too much memory</span>
-<span class="p">Compare free memory, pagefile use and the heaviest processes.</span>
-<span class="go">Open ↗</span>
-</a>
-<a class="grow" href="cases/windows-update-pending-reboot.html">
-<span class="n">04</span>
-<span class="t">Windows Update may need a restart</span>
-<span class="p">Check installed updates, reboot indicators and update services.</span>
-<span class="go">Open ↗</span>
-</a>
-<a class="grow" href="cases/windows-disk-health-low-space.html">
-<span class="n">05</span>
-<span class="t">Disk space is low or disk health is unclear</span>
-<span class="p">List physical disk state and volume free space with a warning threshold.</span>
-<span class="go">Open ↗</span>
-</a>
-<a class="grow" href="cases/windows-firewall-disabled.html">
-<span class="n">06</span>
-<span class="t">Windows Firewall profiles are disabled</span>
-<span class="p">Check Domain, Private and Public state with Defender and Secure Boot context.</span>
-<span class="go">Open ↗</span>
-</a>
-<a class="grow" href="cases/windows-time-service-stopped.html">
-<span class="n">07</span>
-<span class="t">Windows Time service is stopped</span>
-<span class="p">Inspect W32Time state, start mode, clock values and configured source.</span>
-<span class="go">Open ↗</span>
-</a>
-<a class="grow" href="cases/windows-network-routes.html">
-<span class="n">08</span>
-<span class="t">Unexpected default route or proxy</span>
-<span class="p">Compare route metrics, gateways, DNS, DHCP and proxy context.</span>
-<span class="go">Open ↗</span>
-</a>
-</div>
-</section>
-<div class="band">
-<section class="sec">
-<span class="kicker" data-reveal="scroll">07 / FAQ</span>
-<h2 data-reveal="scroll">Expected behaviour, without guesswork.</h2>
-<div class="faq" data-reveal="scroll" style="--i: 1;">
-<details>
-<summary>
-<span class="q">?</span>Does the toolkit change Windows settings?</summary>
-<p>No. It collects and reports state. It applies no fixes, changes no services, edits no registry keys and reconfigures no network.</p>
-</details>
-<details>
-<summary>
-<span class="q">?</span>Do I need to be an administrator?</summary>
-<p>Not for normal use. Some sources show less detail without elevation; the report says what was unavailable and carries on.</p>
-</details>
-<details>
-<summary>
-<span class="q">?</span>Does WARN mean it failed?</summary>
-<p>No. WARN describes a state worth reviewing. A module that genuinely fails is reported separately with a non-zero exit code.</p>
-</details>
-<details>
-<summary>
-<span class="q">?</span>Where do the reports go?</summary>
-<p>The interactive TUI uses <code>.\WindowsDiagnosticsReports</code> by default. Command-line mode uses the current directory unless you pass <code>-OutputDirectory</code>. It writes a TXT file and, if enabled, a Markdown copy; nothing is uploaded automatically.</p>
-</details>
-<details>
-<summary>
-<span class="q">?</span>Why does the logo sometimes look blocky?</summary>
-<p>The Unicode logo needs an interactive UTF-8 terminal. Older encodings such as cp866 and redirected output get the plain ASCII version instead.</p>
-</details>
-<details>
-<summary>
-<span class="q">?</span>Does resizing the window restart the run?</summary>
-<p>No. Resizing redraws the interface and keeps your selection. A running check is not restarted.</p>
-</details>
-</div>
-</section>
-</div>
-<section class="sec">
-<div class="cta" data-reveal="scroll">
-<span class="kicker">Ready / run</span>
-<h2>Diagnose Windows before changing Windows.</h2>
-<p class="lede">Open source, dependency-free, and built to produce evidence you can actually send to someone.</p>
-<div class="row">
-<a class="wbtn wbtn--primary" href="#quick-start">&gt; Quick start</a>
-<a class="wbtn" href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta">View v0.1.0-beta</a>
-<a class="wbtn" href="https://github.com/0x0bug/windows-diagnostics-toolkit">View source</a>
-<a class="wbtn" href="https://github.com/0x0bug/windows-diagnostics-toolkit/issues/new/choose">Report a problem</a>
-</div>
-</div>
-</section>
+DeviceId     : <span class="now">&lt;ID-1&gt;</span></pre></div>
+        </div>
+        <p class="warning-note"><span class="wtag" data-k="warn">[!]</span> Program names, dump-file names and Event Log messages can still contain sensitive information. Review every report before sharing it.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="sec" id="guides">
+    <div class="sec-hd"><span class="kicker">Guides</span><a class="kicker-meta" href="cases/">All troubleshooting guides ↗</a></div>
+    <h2>Incident guides.</h2>
+    <div class="guide-grid">
+      <article class="guide-card"><h3>Prepare a Windows diagnostic report for a support ticket.</h3><p>Collect consistent evidence and review Privacy Mode output before attaching it.</p><a href="cases/windows-diagnostic-report-for-tech-support.html">Open guide →</a></article>
+      <article class="guide-card"><h3>Investigate high memory or CPU usage.</h3><p>Compare current pressure, pagefile state and the highest-impact processes.</p><a href="cases/windows-high-memory-usage.html">Open guide →</a></article>
+      <article class="guide-card"><h3>Collect application crash and hang evidence.</h3><p>Review grouped Event Log, Reliability Monitor and dump metadata.</p><a href="cases/windows-application-crashes.html">Open guide →</a></article>
+      <article class="guide-card"><h3>Verify network routes, DNS and proxy configuration.</h3><p>Compare adapters, routes, gateways, name resolution and proxy state.</p><a href="cases/windows-network-routes.html">Open guide →</a></article>
+    </div>
+    <p class="note"><a href="cases/">View all troubleshooting guides</a></p>
+  </section>
+
+  <div class="band">
+    <section class="sec" id="faq">
+      <span class="kicker">FAQ</span>
+      <h2>Operational details.</h2>
+      <div class="faq">
+        <details><summary><span class="q">?</span>Do I need administrator rights?</summary><p>No for the standard collection. Some Windows sources expose less detail without elevation; WDT reports unavailable data and continues where possible.</p></details>
+        <details><summary><span class="q">?</span>Does WDT change system configuration?</summary><p>No. Production diagnostics collect and report state without changing services, registry settings, firewall rules or network configuration.</p></details>
+        <details><summary><span class="q">?</span>Where are reports stored?</summary><p>The interactive interface writes to <code>.\WindowsDiagnosticsReports</code> by default. Command-line mode writes to the current directory unless <code>-OutputDirectory</code> is provided.</p></details>
+        <details><summary><span class="q">?</span>What does Privacy Mode remove?</summary><p>It replaces common host, user, network and device identifiers with typed tokens. Program names, dump-file names and arbitrary sensitive Event Log text can remain.</p></details>
+        <details><summary><span class="q">?</span>Does WARN mean the collection failed?</summary><p>No. WARN identifies collected state worth reviewing. Module execution failures are reported separately and can produce a non-zero exit code.</p></details>
+      </div>
+    </section>
+  </div>
+
+  <section class="sec trust-block" aria-labelledby="trust-title">
+    <div><span class="kicker">Project review</span><h2 id="trust-title">Open source and reviewable</h2><p>WDT is maintained by 0x0bug as an open-source Windows diagnostics project. Review the source, tests, security policy and release history before using it in a managed environment.</p></div>
+    <nav class="trust-links" aria-label="Project review links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit">Source</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta">Releases</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/actions">CI</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/SECURITY.md">Security</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/issues/new/choose">Issues</a></nav>
+  </section>
+
+  <section class="sec">
+    <div class="cta">
+      <h2>Collect the evidence before changing the system.</h2>
+      <p class="lede">Run a consistent Windows diagnostic collection and move directly to analysis.</p>
+      <div class="row"><a class="wbtn wbtn--primary" href="#quick-start">Run diagnostics</a><a class="wbtn" href="https://github.com/0x0bug/windows-diagnostics-toolkit">View on GitHub</a></div>
+    </div>
+  </section>
 </main>
 <footer class="foot">
-<div class="foot-in">
-<span class="name">Windows Diagnostics Toolkit</span>
-<span>MIT License · not affiliated with Microsoft</span>
-<span class="ok">[OK] Safe. Local. Transparent.</span>
-</div>
+  <div class="foot-in"><span class="name">Windows Diagnostics Toolkit</span><span>MIT License · not affiliated with Microsoft</span></div>
 </footer>
 </body>
 </html>
