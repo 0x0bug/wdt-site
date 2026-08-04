@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sample Windows Diagnostic Report | WDT</title>
+  <meta name="description" content="Review anonymized demonstration output from a Windows Diagnostics Toolkit TXT report, including its findings summary and module evidence.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="theme-color" content="#05080b">
+  <link rel="canonical" href="https://wdt.digital/sample-report/">
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="icon" href="../assets/social-preview.svg" type="image/svg+xml">
+  <script src="../assets/site.js" defer></script>
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Windows Diagnostics Toolkit">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="Sample Windows Diagnostic Report | WDT">
+  <meta property="og:description" content="Review anonymized demonstration output from a Windows Diagnostics Toolkit report.">
+  <meta property="og:url" content="https://wdt.digital/sample-report/">
+  <meta property="og:image" content="https://wdt.digital/assets/social-preview.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="640">
+  <meta property="og:image:alt" content="Windows Diagnostics Toolkit terminal interface">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sample Windows Diagnostic Report | WDT">
+  <meta name="twitter:description" content="Review anonymized demonstration output from a Windows Diagnostics Toolkit report.">
+  <meta name="twitter:image" content="https://wdt.digital/assets/social-preview.png">
+  <meta name="twitter:image:alt" content="Windows Diagnostics Toolkit terminal interface">
+</head>
+<body class="report-page">
+<a class="skip-link" href="#report-content">Skip to report</a>
+<p class="sr-only" id="site-status" role="status" aria-live="polite" aria-atomic="true"></p>
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="../" aria-label="Windows Diagnostics Toolkit home">
+      <span class="brand-mark">WDT</span>
+      <span class="brand-name">Windows Diagnostics Toolkit</span>
+    </a>
+    <button type="button" class="wnav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">≡</button>
+    <nav class="wnav" id="site-nav" aria-label="Primary navigation">
+      <a href="../">Back to WDT</a>
+      <a class="wbtn wbtn--primary nav-run" href="../#quick-start">Run diagnostics</a>
+    </nav>
+  </div>
+</header>
+<main class="report-shell" id="report-content">
+  <header class="report-header">
+    <p class="kicker"><a href="../">← Back to WDT</a></p>
+    <h1>Sample Windows diagnostic report</h1>
+    <p class="lede">An anonymized demonstration of the structured TXT output produced by WDT. These values do not describe a real system.</p>
+    <p class="report-source-note">Source content: <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/report-example.md">docs/report-example.md</a>. Privacy Mode reduces common identifiers, but every generated report still requires review before sharing.</p>
+  </header>
+  <div class="report-toolbar">
+    <span class="kicker">TXT report · demonstration data</span>
+    <button type="button" class="wbtn wbtn--mini" data-copy-target="sample-report-full" data-copy-status="site-status" data-copy-label="Sample report" aria-label="Copy the full sample report">Copy full report</button>
+  </div>
+  <article class="sample-report" aria-label="Full sample report">
+    <pre id="sample-report-full">Windows Diagnostics Toolkit - Support Report
+Created at    : 2026-07-12 10:15:30 +02:00
+Computer name : &lt;HOST-1&gt;
+Mode          : read-only
+Privacy mode  : enabled
+Output        : &lt;USER-1&gt;\WindowsDiagnosticsReport-20260712-101530.txt
+Selected      : System Information, Security Posture, Performance Snapshot, Network Check, Time Sync Diagnostics, Disk Health, Crash and Hang Diagnostics, Event Log Check, Services Check, Windows Update Check
+
+== Findings Summary ==
+Overall status : WARN
+Errors         : 0
+Warnings       : 3
+OK modules     : 7
+
+[WARN] Security Posture / SECURITY_BITLOCKER_NOT_PROTECTED - One or more BitLocker volumes are not protected.
+[WARN] Time Sync Diagnostics / TIME_SOURCE_LOCAL_CLOCK - Windows Time is using a local clock source.
+[WARN] Services Check / SERVICE_STATE_ISSUES - One or more services need attention.
+[OK] System Information - No findings.
+[OK] Performance Snapshot - No findings.
+[OK] Network Check - No findings.
+[OK] Disk Health - No findings.
+[OK] Crash and Hang Diagnostics - No findings.
+[OK] Event Log Check - No findings.
+[OK] Windows Update Check - No findings.
+
+== System Information ==
+Command: powershell.exe -NoProfile -ExecutionPolicy Bypass -File modules\system\diagnostic.ps1
+Exit code: 0
+
+Windows Diagnostics Toolkit - System Information
+Mode: read-only
+
+== Windows ==
+Computer name : &lt;HOST-1&gt;
+Caption       : Microsoft Windows 11 Pro
+Version       : 10.0.26100
+Build number  : 26100
+Last boot     : 07/12/2026 08:12:00
+Uptime        : 0 days, 02:03:30
+
+== Hardware ==
+CPU           : Example CPU
+Memory        : 32.00 GB
+GPU           : Example GPU
+
+== Security Posture ==
+Command: powershell.exe -NoProfile -ExecutionPolicy Bypass -File modules\security\diagnostic.ps1
+Exit code: 0
+
+== Defender ==
+Antivirus enabled    : Enabled
+Real-time protection : Enabled
+
+== Firewall Profiles ==
+Domain  : Enabled
+Private : Enabled
+Public  : Enabled
+
+== BitLocker ==
+Volume            : C:\
+Protection status : Off
+Volume status     : FullyDecrypted
+
+== Network Check ==
+Command: powershell.exe -NoProfile -ExecutionPolicy Bypass -File modules\network\diagnostic.ps1
+Exit code: 0
+
+== Active Network Adapters ==
+Name        : Ethernet
+Status      : Up
+MAC         : &lt;MAC-1&gt;
+IPv4        : &lt;IP-1&gt;
+Gateway     : &lt;IP-2&gt;
+DNS servers : &lt;IP-3&gt;
+DHCP        : Enabled
+
+== WinINET Proxy ==
+Enabled        : Enabled
+Proxy server   : https=&lt;REDACTED&gt;@proxy.example.invalid:8443
+Auto config URL: https://proxy.example.invalid/config.pac?token=&lt;REDACTED&gt;
+
+== Time Sync Diagnostics ==
+Command: powershell.exe -NoProfile -ExecutionPolicy Bypass -File modules\time\diagnostic.ps1
+Exit code: 0
+
+== Windows Time Service ==
+Name          : W32Time
+State         : Running
+Start mode    : Auto
+Domain joined : False
+
+== Time Source ==
+Source: Local CMOS Clock
+
+== W32tm Status ==
+Source: Local CMOS Clock
+
+== Disk Health ==
+Command: powershell.exe -NoProfile -ExecutionPolicy Bypass -File modules\disk\diagnostic.ps1
+Exit code: 0
+
+== Physical Disks ==
+Name       : ExampleDisk
+Media type : SSD
+Health     : Healthy
+Size       : 930.00 GB
+
+== Services Check ==
+Command: powershell.exe -NoProfile -ExecutionPolicy Bypass -File modules\services\diagnostic.ps1
+Exit code: 0
+
+== Automatic Services Not Running ==
+Name        : ExampleService
+DisplayName : Example Service
+State       : Stopped
+StartMode   : Auto
+
+== Windows Update Check ==
+Command: powershell.exe -NoProfile -ExecutionPolicy Bypass -File modules\updates\diagnostic.ps1
+Exit code: 0
+
+== Pending Reboot ==
+Pending reboot : No
+Indicators found: None</pre>
+  </article>
+  <p class="report-source-note">The source example notes that a real report includes complete output for every selected module. Always review the generated file before posting it publicly.</p>
+  <div class="actions"><a class="wbtn wbtn--primary" href="../#quick-start">Run diagnostics</a><a class="wbtn" href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/report-example.md">View source example</a></div>
+</main>
+<footer class="foot"><div class="foot-in"><span class="name">Windows Diagnostics Toolkit</span><span>Demonstration data</span></div></footer>
+</body>
+</html>

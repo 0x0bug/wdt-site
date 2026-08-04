@@ -28,7 +28,7 @@ foreach ($relativePath in @('.nojekyll', '404.html', 'index.html', 'robots.txt',
     Copy-Item -LiteralPath $sourcePath -Destination (Join-Path $outputRoot $relativePath)
 }
 
-foreach ($relativePath in @('assets', 'cases')) {
+foreach ($relativePath in @('assets', 'cases', 'sample-report')) {
     $sourcePath = Join-Path -Path $repositoryRoot -ChildPath $relativePath
     if (-not (Test-Path -LiteralPath $sourcePath -PathType Container)) {
         throw "Required site directory is missing: $relativePath"

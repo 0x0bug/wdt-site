@@ -93,6 +93,7 @@ if (-not (Test-Path -LiteralPath $siteRoot -PathType Container)) {
 $htmlFiles = @(
     @(Get-ChildItem -LiteralPath $siteRoot -Filter '*.html' -File)
     @(Get-ChildItem -LiteralPath (Join-Path $siteRoot 'cases') -Recurse -Filter '*.html' -File)
+    @(Get-ChildItem -LiteralPath (Join-Path $siteRoot 'sample-report') -Recurse -Filter '*.html' -File)
 ) | Sort-Object -Property FullName
 if ($htmlFiles.Count -lt 2) {
     Add-TestIssue 'Expected at least a homepage and one additional HTML page.'
@@ -231,6 +232,30 @@ foreach ($file in $htmlFiles) {
     }
 }
 
+$homeHtml = Get-Content -LiteralPath (Join-Path $siteRoot 'index.html') -Raw
+$expectedHomeTitle = 'Windows Diagnostic Collection Tool for System Administrators | WDT'
+$expectedHomeDescription = 'Collect system, performance, network, security, storage, update and crash diagnostics from Windows 10 and 11 in one structured read-only report.'
+if ((Get-FirstMatchValue -Text $homeHtml -Pattern '<title>\s*(.*?)\s*</title>') -cne $expectedHomeTitle) {
+    Add-TestIssue 'Home title does not match the approved system-administrator positioning.'
+}
+if ((Get-FirstMatchValue -Text $homeHtml -Pattern '<meta\s+[^>]*name=["'']description["''][^>]*content=["''](.*?)["''][^>]*>') -cne $expectedHomeDescription) {
+    Add-TestIssue 'Home description does not match the approved diagnostic-collection copy.'
+}
+foreach ($property in @('og:title', 'twitter:title')) {
+    $attributeName = if ($property.StartsWith('og:')) { 'property' } else { 'name' }
+    $value = Get-FirstMatchValue -Text $homeHtml -Pattern (('<meta\s+[^>]*{0}=["'']{1}["''][^>]*content=["''](.*?)["''][^>]*>') -f $attributeName, [regex]::Escape($property))
+    if ($value -cne $expectedHomeTitle) {
+        Add-TestIssue "$property does not match the home title."
+    }
+}
+foreach ($property in @('og:description', 'twitter:description')) {
+    $attributeName = if ($property.StartsWith('og:')) { 'property' } else { 'name' }
+    $value = Get-FirstMatchValue -Text $homeHtml -Pattern (('<meta\s+[^>]*{0}=["'']{1}["''][^>]*content=["''](.*?)["''][^>]*>') -f $attributeName, [regex]::Escape($property))
+    if ($value -cne $expectedHomeDescription) {
+        Add-TestIssue "$property does not match the home description."
+    }
+}
+
 $howToArticlePath = Join-Path $siteRoot 'cases\windows-diagnostic-report-for-tech-support.html'
 $howToArticleHtml = Get-Content -LiteralPath $howToArticlePath -Raw
 $howToJsonMatches = [regex]::Matches($howToArticleHtml, '<script\s+[^>]*type=["'']application/ld\+json["''][^>]*>(.*?)</script>', $jsonOptions)
@@ -315,8 +340,8 @@ else {
         $sitemapText = Get-Content -LiteralPath $sitemapPath -Raw
         [xml]$sitemap = $sitemapText
         $sitemapUrls = @($sitemap.urlset.url | ForEach-Object { [string]$_.loc })
-        if ($sitemapUrls.Count -ne 10) {
-            Add-TestIssue "sitemap.xml contains $($sitemapUrls.Count) URLs; expected exactly 10."
+        if ($sitemapUrls.Count -ne 11) {
+            Add-TestIssue "sitemap.xml contains $($sitemapUrls.Count) URLs; expected exactly 11."
         }
         if (@($sitemapUrls | Select-Object -Unique).Count -ne $sitemapUrls.Count) {
             Add-TestIssue 'sitemap.xml contains duplicate URLs.'

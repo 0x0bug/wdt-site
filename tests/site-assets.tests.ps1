@@ -100,7 +100,8 @@ $expectedArtifactPaths = @(
     'index.html',
     'robots.txt',
     'run.ps1',
-    'sitemap.xml'
+    'sitemap.xml',
+    'sample-report/index.html'
 ) + $requiredAssets + @(
     'cases/index.html',
     'cases/windows-application-crashes.html',
@@ -134,8 +135,9 @@ try {
     $htmlFiles = @(
         @(Get-ChildItem -LiteralPath $repositoryRoot -Filter '*.html' -File)
         @(Get-ChildItem -LiteralPath (Join-Path $repositoryRoot 'cases') -Filter '*.html' -File)
+        @(Get-ChildItem -LiteralPath (Join-Path $repositoryRoot 'sample-report') -Filter '*.html' -File)
     )
-    Assert-True ($htmlFiles.Count -eq 11) "Expected 11 HTML files; found $($htmlFiles.Count)."
+    Assert-True ($htmlFiles.Count -eq 12) "Expected 12 HTML files; found $($htmlFiles.Count)."
 
     foreach ($htmlFile in $htmlFiles) {
         $html = Get-Content -LiteralPath $htmlFile.FullName -Raw
@@ -237,6 +239,7 @@ try {
     $bootstrapCommand = 'irm https://wdt.digital/run.ps1 | iex'
     $releaseUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta'
     $zipUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.1.0-beta/windows-diagnostics-toolkit-v0.1.0-beta.zip'
+    $checksumUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.1.0-beta/windows-diagnostics-toolkit-v0.1.0-beta.zip.sha256'
     $zipSha256 = 'ee741a450fa20b0903adec858af446806cba74666fde0f98b1bde85dc0188e0f'
     $homeJsonLdMatch = [regex]::Match($indexHtml, '(?is)<script\s+[^>]*type=["'']application/ld\+json["''][^>]*>(.*?)</script>')
     Assert-True $homeJsonLdMatch.Success 'Home page is missing JSON-LD.'
@@ -246,6 +249,9 @@ try {
     Assert-True ($softwareApplication[0].softwareVersion -ceq '0.1.0-beta') 'SoftwareApplication softwareVersion is incorrect.'
     Assert-True ($softwareApplication[0].downloadUrl -ceq $zipUrl) 'SoftwareApplication downloadUrl is incorrect.'
     Assert-True ($softwareApplication[0].releaseNotes -ceq $releaseUrl) 'SoftwareApplication releaseNotes is incorrect.'
+    foreach ($feature in @('Selective module collection', 'Command-line automation', 'Findings summary', 'Local TXT and Markdown reports', 'Privacy Mode', 'Windows PowerShell 5.1 and PowerShell 7+', 'No agent or third-party dependencies')) {
+        Assert-True ($feature -cin @($softwareApplication[0].featureList)) "SoftwareApplication featureList is missing: $feature"
+    }
     Assert-True (@([regex]::Matches($indexHtml, [regex]::Escape($bootstrapCommand))).Count -eq 1) 'Home page must contain exactly one primary bootstrap command.'
     $quickCommandMatch = [regex]::Match($indexHtml, '(?is)<pre\b[^>]*\bid=["'']quick-command["''][^>]*>(.*?)</pre>')
     Assert-True $quickCommandMatch.Success 'Home page is missing the quick-command copy target.'
@@ -253,9 +259,10 @@ try {
     $quickCommandText = ($quickCommandText -replace '(?m)^\s*PS>\s?', '').Trim()
     Assert-True ($quickCommandText -ceq $bootstrapCommand) 'Quick-start COPY target does not contain the canonical bootstrap command.'
     Assert-True ($indexHtml -match '(?i)<section\b[^>]*\bid=["'']quick-start["'']') 'Quick-start section is missing its permanent ID.'
-    Assert-True (@([regex]::Matches($indexHtml, '(?i)href=["'']#quick-start["'']')).Count -eq 2) 'Hero and bottom CTA must both target #quick-start.'
+    Assert-True (@([regex]::Matches($indexHtml, '(?i)href=["'']#quick-start["'']')).Count -eq 3) 'Header, hero and bottom CTA must target #quick-start.'
     Assert-True ($indexHtml.Contains($releaseUrl)) 'Home page is missing the GitHub prerelease URL.'
     Assert-True ($indexHtml.Contains($zipUrl)) 'Home page is missing the release ZIP URL.'
+    Assert-True ($indexHtml.Contains($checksumUrl)) 'Home page is missing the release checksum URL.'
     Assert-True ($indexHtml.Contains($zipSha256)) 'Home page is missing the release ZIP SHA-256.'
     Assert-True ($indexHtml.Contains('irm https://wdt.digital/run.ps1 -OutFile .\wdt-run.ps1')) 'Home page is missing the bootstrap inspection workflow.'
     foreach ($staleCopy in @('no beta release ZIP is published yet', 'planned v0.1.0-beta', 'until that beta is published', 'bootstrap is prepared')) {
@@ -271,9 +278,18 @@ try {
         $articleHtml = Get-Content -LiteralPath (Join-Path $repositoryRoot $articlePath) -Raw
         Assert-True ($articleHtml -match '(?i)<button[^>]+data-copy-(?:text|target)=["''][^"'']+["''][^>]+data-copy-status=["''][^"'']+["'']') "Article command copy control is missing: $articlePath"
     }
-    Assert-True ($indexHtml -match [regex]::Escape('Interactive simulation based on the current WDT terminal interface. Nothing runs on your PC.')) 'TUI simulation disclosure is missing.'
+    Assert-True ($indexHtml -match [regex]::Escape('This simulation runs only in the browser.')) 'TUI simulation disclosure is missing.'
     Assert-True ($indexHtml -match [regex]::Escape('Output: .\WindowsDiagnosticsReports')) 'TUI default output directory is inaccurate.'
     Assert-True ($indexHtml -match 'data-tui-module' -and $indexHtml -match 'data-tui-option' -and $indexHtml -match 'data-tui-action=["'']run["'']') 'Interactive TUI controls are missing.'
+    foreach ($anchor in @('try', 'quick-start', 'checks', 'privacy', 'guides', 'faq')) {
+        Assert-True ($indexHtml -match ('(?i)\bid=["'']{0}["'']' -f [regex]::Escape($anchor))) "Required homepage anchor is missing: #$anchor"
+    }
+    foreach ($selector in @('-Module System', '-Module Performance', '-Module Network', '-Module Security', '-Module Disk', '-Module Crashes,Events', '-Module Services', '-Module Updates,Time')) {
+        Assert-True ($indexHtml.Contains($selector)) "Verified diagnostic selector is missing: $selector"
+    }
+    Assert-True (@([regex]::Matches($indexHtml, '(?i)<article\b[^>]*class=["''][^"'']*diagnostic-card[^"'']*["'']')).Count -eq 8) 'Homepage must contain exactly eight diagnostic groups.'
+    Assert-True (@([regex]::Matches($indexHtml, '(?i)<details\b')).Count -eq 9) 'Homepage must contain the screenshot, release and five FAQ details elements.'
+    Assert-True ($indexHtml -notmatch [regex]::Escape('Three steps, one file at the end.')) 'Removed workflow section is still present.'
     foreach ($state in @('QUEUED', 'RUNNING', '[OK]', '[WARN]', '[ERROR]')) {
         Assert-True ($indexHtml -match [regex]::Escape($state) -or $siteJavaScript -match [regex]::Escape($state)) "TUI state is missing: $state"
     }
@@ -316,6 +332,14 @@ try {
         Assert-True ($siteJavaScript -match [regex]::Escape("setAttribute('role', '$role')")) "Mobile adaptive logic does not apply role=$role."
     }
     Assert-True ($siteJavaScript -match "removeAttribute\('role'\)" -and $siteJavaScript -match 'compactTui\.addEventListener') 'Desktop/mobile resize logic does not remove obsolete tab roles.'
+
+    $sampleReportPath = Join-Path $repositoryRoot 'sample-report\index.html'
+    $sampleReportHtml = Get-Content -LiteralPath $sampleReportPath -Raw
+    Assert-True ($sampleReportHtml -match '(?i)<html\s+lang=["'']en["'']') 'Sample report language is missing or incorrect.'
+    Assert-True ($sampleReportHtml -match '(?i)<link\s+[^>]*rel=["'']canonical["''][^>]*href=["'']https://wdt\.digital/sample-report/["'']') 'Sample report canonical is incorrect.'
+    Assert-True ($sampleReportHtml -match '(?i)data-copy-target=["'']sample-report-full["'']') 'Sample report copy control is missing.'
+    Assert-True ($sampleReportHtml -match [regex]::Escape('These values do not describe a real system.')) 'Sample report does not identify its demonstration data.'
+    Assert-True ($sampleReportHtml -match [regex]::Escape('docs/report-example.md')) 'Sample report source link is missing.'
 
     $observerRegistration = $siteJavaScript.IndexOf('revealObserver.observe(element)', [System.StringComparison]::Ordinal)
     $motionOptIn = $siteJavaScript.IndexOf("classList.add('wdt-motion')", [System.StringComparison]::Ordinal)
