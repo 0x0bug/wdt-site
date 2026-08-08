@@ -3,8 +3,9 @@ param(
     [ValidateNotNullOrEmpty()]
     [string]$SiteRoot = (Split-Path -Parent $PSScriptRoot),
 
+    [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [string]$OutputPath = (Join-Path (Split-Path -Parent $PSScriptRoot) 'sitemap.xml')
+    [string]$OutputPath
 )
 
 $ErrorActionPreference = 'Stop'

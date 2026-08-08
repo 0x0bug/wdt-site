@@ -18,6 +18,11 @@ function Assert-True {
     if (-not $Condition) { throw $Message }
 }
 
+$repositoryRoot = Split-Path -Parent $PSScriptRoot
+$siteDiscoveryScript = Join-Path $repositoryRoot 'scripts\SiteDiscovery.ps1'
+Assert-True (Test-Path -LiteralPath $siteDiscoveryScript -PathType Leaf) 'Public site discovery script is missing.'
+. $siteDiscoveryScript
+
 function New-SiteHttpClient {
     param(
         [bool]$AllowAutoRedirect,
@@ -63,10 +68,21 @@ function Assert-HtmlResponse {
 
     $html = $Response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
     Assert-True ($html -match '(?i)<html\b') "$Url did not return an HTML document."
-    Assert-True ($html -notmatch '(?is)<meta\b[^>]*name=["'']robots["''][^>]*content=["''][^"'']*(?:noindex|nofollow|none)') "$Url contains a restrictive meta robots directive."
-    $canonicalMatches = @([regex]::Matches($html, '(?is)<link\b[^>]*rel=["'']canonical["''][^>]*href=["'']([^"'']+)["''][^>]*>'))
-    Assert-True ($canonicalMatches.Count -eq 1) "$Url contains $($canonicalMatches.Count) canonical links; expected exactly one."
-    $canonical = [System.Net.WebUtility]::HtmlDecode($canonicalMatches[0].Groups[1].Value)
+    $robotsTags = @([regex]::Matches($html, '(?is)<meta\b[^>]*>') | Where-Object {
+        (Get-HtmlTagAttribute -Tag $_.Value -Name 'name') -ieq 'robots'
+    })
+    foreach ($robotsTag in $robotsTags) {
+        $robotsContent = Get-HtmlTagAttribute -Tag $robotsTag.Value -Name 'content'
+        Assert-True ($robotsContent -notmatch '(?i)(?:^|[\s,])(?:noindex|nofollow|none)(?:$|[\s,])') "$Url contains a restrictive meta robots directive: $robotsContent"
+    }
+
+    $canonicalTags = @([regex]::Matches($html, '(?is)<link\b[^>]*>') | Where-Object {
+        $rel = Get-HtmlTagAttribute -Tag $_.Value -Name 'rel'
+        $null -ne $rel -and @($rel -split '\s+') -icontains 'canonical'
+    })
+    Assert-True ($canonicalTags.Count -eq 1) "$Url contains $($canonicalTags.Count) canonical links; expected exactly one."
+    $canonical = Get-HtmlTagAttribute -Tag $canonicalTags[0].Value -Name 'href'
+    Assert-True (-not [string]::IsNullOrWhiteSpace($canonical)) "$Url canonical link has no href."
     Assert-True ($canonical -ceq $ExpectedCanonical) "$Url canonical is $canonical, expected $ExpectedCanonical"
 
     return $html

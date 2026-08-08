@@ -8,7 +8,6 @@ on:
       - '**/*.html'
       - 'robots.txt'
       - 'run.ps1'
-      - 'sitemap.xml'
       - 'assets/**'
       - 'scripts/**'
       - 'tests/**'
@@ -21,7 +20,6 @@ on:
       - '**/*.html'
       - 'robots.txt'
       - 'run.ps1'
-      - 'sitemap.xml'
       - 'assets/**'
       - 'scripts/**'
       - 'tests/**'
@@ -44,16 +42,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Generate sitemap
-        shell: pwsh
-        run: ./scripts/Generate-Sitemap.ps1
-
-      - name: Verify committed sitemap freshness
-        if: github.event_name == 'pull_request'
-        shell: pwsh
-        run: git diff --exit-code -- sitemap.xml
-
-      - name: Validate sitemap discovery and dates
+      - name: Generate and validate sitemap
         shell: pwsh
         run: ./tests/sitemap.tests.ps1
 
@@ -106,10 +95,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Generate sitemap from main history
-        shell: pwsh
-        run: ./scripts/Generate-Sitemap.ps1
 
       - name: Prepare Pages artifact
         shell: pwsh

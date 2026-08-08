@@ -24,13 +24,12 @@ Do not edit `run.ps1` manually. Synchronize it from the canonical WDT bootstrap.
 Run the dependency-free static checks with PowerShell:
 
 ```powershell
-pwsh -NoProfile -File ./scripts/Generate-Sitemap.ps1
 pwsh -NoProfile -File ./tests/sitemap.tests.ps1
 pwsh -NoProfile -File ./tests/site-seo.tests.ps1
 pwsh -NoProfile -File ./tests/site-assets.tests.ps1
 ```
 
-`sitemap.xml` is committed. Pull-request CI regenerates it and fails when `git diff --exit-code -- sitemap.xml` finds drift. After merge, deployment regenerates it again from the resulting `main` history before packaging, which keeps squash-merge timestamps accurate.
+`sitemap.xml` is a generated deployment artifact and is not committed. Sitemap tests generate it twice in a temporary location, validate its full contents, and verify byte-for-byte idempotency. Pages artifact preparation generates the production file directly from the checked-out Git history, so squash merges cannot leave a stale source copy behind.
 
 ## Adding an indexable page
 
@@ -43,7 +42,7 @@ Add the HTML file outside service, test, build, fixture, asset, hidden, `interna
 
 Root `index.html` maps to `https://wdt.digital/`; a directory `index.html` maps to a trailing-slash URL; other HTML filenames remain in the canonical URL. `404.html` and pages with `noindex` are never included in the sitemap.
 
-Every sitemap `lastmod` is the W3C timestamp from the latest Git author commit for its HTML file. New pages therefore need Git history before sitemap generation. After committing a page change, regenerate `sitemap.xml` and include the updated file in the same PR (amend the commit or add a follow-up commit). Running the generator twice for the same repository state must produce identical bytes.
+Every sitemap `lastmod` is the W3C timestamp from the latest Git author commit for its HTML file. New pages therefore need Git history before sitemap validation. Running the generator twice for the same repository state must produce identical bytes; no generated sitemap file is added to the commit.
 
 To preview the site locally:
 

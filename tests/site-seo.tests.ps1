@@ -21,6 +21,20 @@ function Add-TestIssue {
     $issues.Add($Message)
 }
 
+$canonicalAttributeOrderFixtures = @(
+    '<link rel="canonical" href="https://wdt.digital/fixture.html">',
+    '<link href="https://wdt.digital/fixture.html" rel="canonical">'
+)
+foreach ($fixture in $canonicalAttributeOrderFixtures) {
+    $fixtureTags = @([regex]::Matches($fixture, '(?is)<link\b[^>]*>') | Where-Object {
+        $rel = Get-HtmlTagAttribute -Tag $_.Value -Name 'rel'
+        $null -ne $rel -and @($rel -split '\s+') -icontains 'canonical'
+    })
+    if ($fixtureTags.Count -ne 1 -or (Get-HtmlTagAttribute -Tag $fixtureTags[0].Value -Name 'href') -cne 'https://wdt.digital/fixture.html') {
+        Add-TestIssue 'Canonical parsing depends on HTML attribute order.'
+    }
+}
+
 function Get-FirstMatchValue {
     param(
         [Parameter(Mandatory = $true)][string]$Text,
