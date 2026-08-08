@@ -205,7 +205,7 @@ try {
         $parsedLastModified = [DateTimeOffset]::MinValue
         Assert-True ([DateTimeOffset]::TryParseExact(
             $lastModified,
-            "yyyy-MM-dd'T'HH:mm:sszzz",
+            "yyyy-MM-dd'T'HH:mm:ssK",
             [System.Globalization.CultureInfo]::InvariantCulture,
             [System.Globalization.DateTimeStyles]::None,
             [ref]$parsedLastModified

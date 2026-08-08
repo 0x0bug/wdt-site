@@ -203,7 +203,7 @@ function Get-GitPageLastModified {
     $parsedDate = [DateTimeOffset]::MinValue
     if (-not [DateTimeOffset]::TryParseExact(
         $gitDate,
-        "yyyy-MM-dd'T'HH:mm:sszzz",
+        "yyyy-MM-dd'T'HH:mm:ssK",
         [System.Globalization.CultureInfo]::InvariantCulture,
         [System.Globalization.DateTimeStyles]::None,
         [ref]$parsedDate
