@@ -5,34 +5,26 @@ on:
     paths:
       - '.github/workflows/pages.yml'
       - '.nojekyll'
-      - '404.html'
-      - 'index.html'
+      - '**/*.html'
       - 'robots.txt'
       - 'run.ps1'
       - 'sitemap.xml'
       - 'assets/**'
-      - 'cases/**'
-      - 'scripts/Prepare-PagesArtifact.ps1'
-      - 'tests/bootstrap-sync.tests.ps1'
-      - 'tests/site-assets.tests.ps1'
-      - 'tests/site-seo.tests.ps1'
+      - 'scripts/**'
+      - 'tests/**'
   push:
     branches:
       - main
     paths:
       - '.github/workflows/pages.yml'
       - '.nojekyll'
-      - '404.html'
-      - 'index.html'
+      - '**/*.html'
       - 'robots.txt'
       - 'run.ps1'
       - 'sitemap.xml'
       - 'assets/**'
-      - 'cases/**'
-      - 'scripts/Prepare-PagesArtifact.ps1'
-      - 'tests/bootstrap-sync.tests.ps1'
-      - 'tests/site-assets.tests.ps1'
-      - 'tests/site-seo.tests.ps1'
+      - 'scripts/**'
+      - 'tests/**'
   workflow_dispatch:
 
 concurrency:
@@ -49,7 +41,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          fetch-depth: 0
           persist-credentials: false
+
+      - name: Generate sitemap
+        shell: pwsh
+        run: ./scripts/Generate-Sitemap.ps1
+
+      - name: Verify committed sitemap freshness
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        run: git diff --exit-code -- sitemap.xml
+
+      - name: Validate sitemap discovery and dates
+        shell: pwsh
+        run: ./tests/sitemap.tests.ps1
 
       - name: Validate SEO and local references
         shell: pwsh
@@ -98,7 +104,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          fetch-depth: 0
           persist-credentials: false
+
+      - name: Generate sitemap from main history
+        shell: pwsh
+        run: ./scripts/Generate-Sitemap.ps1
 
       - name: Prepare Pages artifact
         shell: pwsh
