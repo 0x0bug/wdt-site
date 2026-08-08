@@ -82,8 +82,15 @@ function Get-TagAttribute {
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $prepareScript = Join-Path $repositoryRoot 'scripts\Prepare-PagesArtifact.ps1'
+$siteDiscoveryScript = Join-Path $repositoryRoot 'scripts\SiteDiscovery.ps1'
+$sitemapGenerator = Join-Path $repositoryRoot 'scripts\Generate-Sitemap.ps1'
 $temporaryRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('wdt-site-assets-' + [System.Guid]::NewGuid().ToString('N'))
 $artifactRoot = Join-Path $temporaryRoot 'artifact'
+
+Assert-True (Test-Path -LiteralPath $siteDiscoveryScript -PathType Leaf) 'Public site discovery script is missing.'
+Assert-True (Test-Path -LiteralPath $sitemapGenerator -PathType Leaf) 'Sitemap generator is missing.'
+Assert-True (-not (Test-Path -LiteralPath (Join-Path $repositoryRoot 'sitemap.xml'))) 'sitemap.xml must not be stored in the source tree.'
+. $siteDiscoveryScript
 
 $requiredAssets = @(
     'assets/site.js',
@@ -94,25 +101,17 @@ $requiredAssets = @(
     'assets/tui-wide-real.png'
 )
 
-$expectedArtifactPaths = @(
+$publicHtmlFiles = @(Get-SiteHtmlCandidates -SiteRoot $repositoryRoot)
+$publicHtmlPaths = @($publicHtmlFiles | ForEach-Object { Get-RelativePath -Root $repositoryRoot -Path $_.FullName })
+$assetPaths = @(Get-ChildItem -LiteralPath (Join-Path $repositoryRoot 'assets') -Recurse -File | ForEach-Object {
+    Get-RelativePath -Root $repositoryRoot -Path $_.FullName
+})
+$expectedArtifactPaths = @(@(
     '.nojekyll',
-    '404.html',
-    'index.html',
     'robots.txt',
     'run.ps1',
-    'sitemap.xml',
-    'sample-report/index.html'
-) + $requiredAssets + @(
-    'cases/index.html',
-    'cases/windows-application-crashes.html',
-    'cases/windows-diagnostic-report-for-tech-support.html',
-    'cases/windows-disk-health-low-space.html',
-    'cases/windows-firewall-disabled.html',
-    'cases/windows-high-memory-usage.html',
-    'cases/windows-network-routes.html',
-    'cases/windows-time-service-stopped.html',
-    'cases/windows-update-pending-reboot.html'
-)
+    'sitemap.xml'
+) + $assetPaths + $publicHtmlPaths | Sort-Object -Unique)
 
 Assert-True (Test-Path -LiteralPath $prepareScript -PathType Leaf) 'Pages artifact preparation script is missing.'
 
@@ -128,16 +127,17 @@ try {
     Assert-True ($missingArtifactPaths.Count -eq 0) "Pages artifact is missing: $($missingArtifactPaths -join ', ')"
     Assert-True ($unexpectedArtifactPaths.Count -eq 0) "Pages artifact contains unexpected files: $($unexpectedArtifactPaths -join ', ')"
 
+    $artifactSitemapPath = Join-Path $artifactRoot 'sitemap.xml'
+    [xml]$artifactSitemap = Get-Content -LiteralPath $artifactSitemapPath -Raw
+    Assert-True (@($artifactSitemap.urlset.url).Count -gt 0) 'Generated Pages artifact sitemap contains no URLs.'
+    Assert-True (@($artifactSitemap.urlset.url | Where-Object { [string]::IsNullOrWhiteSpace([string]$_.lastmod) }).Count -eq 0) 'Generated Pages artifact sitemap contains a URL without lastmod.'
+
     foreach ($forbiddenPath in @('.git', '.github', 'tests', 'scripts', 'README.md', 'LICENSE')) {
         Assert-True (@($artifactPaths | Where-Object { $_ -eq $forbiddenPath -or $_.StartsWith($forbiddenPath + '/', [System.StringComparison]::OrdinalIgnoreCase) }).Count -eq 0) "Pages artifact contains forbidden content: $forbiddenPath"
     }
 
-    $htmlFiles = @(
-        @(Get-ChildItem -LiteralPath $repositoryRoot -Filter '*.html' -File)
-        @(Get-ChildItem -LiteralPath (Join-Path $repositoryRoot 'cases') -Filter '*.html' -File)
-        @(Get-ChildItem -LiteralPath (Join-Path $repositoryRoot 'sample-report') -Filter '*.html' -File)
-    )
-    Assert-True ($htmlFiles.Count -eq 12) "Expected 12 HTML files; found $($htmlFiles.Count)."
+    $htmlFiles = $publicHtmlFiles
+    Assert-True ($htmlFiles.Count -ge 2) "Expected at least two public HTML files; found $($htmlFiles.Count)."
 
     foreach ($htmlFile in $htmlFiles) {
         $html = Get-Content -LiteralPath $htmlFile.FullName -Raw
@@ -181,10 +181,18 @@ try {
 
     $pagesWorkflowPath = Join-Path $repositoryRoot '.github\workflows\pages.yml'
     $pagesWorkflow = Get-Content -LiteralPath $pagesWorkflowPath -Raw
+    Assert-True ($pagesWorkflow -notmatch '(?m)^\s*contents:\s*write\s*$') 'Pages workflow must not use a write token to commit generated sitemap data.'
+    $validateJob = Get-WorkflowJobBlock -WorkflowText $pagesWorkflow -JobName 'validate'
     $verifyBootstrapJob = Get-WorkflowJobBlock -WorkflowText $pagesWorkflow -JobName 'verify-bootstrap'
     $packageJob = Get-WorkflowJobBlock -WorkflowText $pagesWorkflow -JobName 'package'
     $deployJob = Get-WorkflowJobBlock -WorkflowText $pagesWorkflow -JobName 'deploy'
 
+    Assert-True (-not [string]::IsNullOrWhiteSpace($validateJob)) 'Pages workflow is missing the validate job.'
+    Assert-True ($validateJob -match '(?m)^\s*fetch-depth:\s*0\s*$') 'validate checkout must fetch full history for Git-derived sitemap dates.'
+    Assert-True ($validateJob -match 'tests/sitemap\.tests\.ps1') 'validate must run the sitemap test suite.'
+    Assert-True ($validateJob -notmatch 'git diff --exit-code -- sitemap\.xml') 'validate must not depend on a committed generated sitemap.'
+    Assert-True ($validateJob -match 'tests/site-seo\.tests\.ps1') 'validate must run the SEO test suite.'
+    Assert-True ($validateJob -match 'tests/site-assets\.tests\.ps1') 'validate must run the asset test suite.'
     Assert-True (-not [string]::IsNullOrWhiteSpace($verifyBootstrapJob)) 'Pages workflow is missing the verify-bootstrap job.'
     Assert-True ($verifyBootstrapJob -match '(?m)^    runs-on:\s*ubuntu-latest\s*$') 'verify-bootstrap must run on ubuntu-latest.'
     Assert-True ($verifyBootstrapJob -match '(?ms)^    permissions:\s*\r?\n      contents:\s*read\s*$') 'verify-bootstrap must grant only contents: read.'
@@ -195,7 +203,16 @@ try {
     Assert-True ($verifyBootstrapJob -match '(?m)^\s*ref:\s*main\s*$') 'verify-bootstrap must compare against WDT main.'
     Assert-True ($packageJob -match '(?m)^    needs:\s*\[\s*validate\s*,\s*verify-bootstrap\s*\]\s*$') 'package must depend on validate and verify-bootstrap.'
     Assert-True ($packageJob -match '(?m)^    if:\s*github\.ref\s*==\s*[''"]refs/heads/main[''"]\s*$') 'package must be restricted to the main branch.'
+    Assert-True ($packageJob -match '(?m)^\s*fetch-depth:\s*0\s*$') 'package checkout must fetch full history for Git-derived sitemap dates.'
+    Assert-True ($packageJob -match 'scripts/Prepare-PagesArtifact\.ps1') 'package must prepare the Pages artifact.'
+    $prepareScriptText = Get-Content -LiteralPath $prepareScript -Raw
+    Assert-True ($prepareScriptText -match 'Generate-Sitemap\.ps1') 'Pages artifact preparation must generate sitemap.xml.'
+    Assert-True ($prepareScriptText -match '(?s)-OutputPath\s+\(Join-Path\s+\$outputRoot\s+[''"]sitemap\.xml[''"]\)') 'Pages artifact preparation must write sitemap.xml inside the artifact root.'
     Assert-True ($deployJob -match '(?m)^    needs:\s*package\s*$') 'deploy must depend only on package.'
+
+    $productionSmokeText = Get-Content -LiteralPath (Join-Path $repositoryRoot 'tests\production-smoke.tests.ps1') -Raw
+    Assert-True ($productionSmokeText -match 'SiteDiscovery\.ps1') 'Production smoke must load the shared HTML attribute parser.'
+    Assert-True ($productionSmokeText -match 'Get-HtmlTagAttribute') 'Production smoke canonical extraction must be independent of attribute order.'
 
     $workflowFiles = @(Get-ChildItem -LiteralPath (Join-Path $repositoryRoot '.github\workflows') -File | Where-Object { $_.Extension -in @('.yml', '.yaml') })
     foreach ($workflowFile in $workflowFiles) {

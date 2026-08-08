@@ -12,7 +12,7 @@ Do not edit `run.ps1` manually. Synchronize it from the canonical WDT bootstrap.
 
 ## Repository structure
 
-- Root HTML files contain the homepage and fallback page.
+- Public HTML is discovered recursively; service, test, build, fixture, asset, and hidden directories are excluded.
 - `assets/` contains the dependency-free CSS, JavaScript, and images.
 - `cases/` contains the case index and diagnostic articles.
 - `tests/` contains static site, artifact, bootstrap, and production smoke tests.
@@ -24,9 +24,25 @@ Do not edit `run.ps1` manually. Synchronize it from the canonical WDT bootstrap.
 Run the dependency-free static checks with PowerShell:
 
 ```powershell
+pwsh -NoProfile -File ./tests/sitemap.tests.ps1
 pwsh -NoProfile -File ./tests/site-seo.tests.ps1
 pwsh -NoProfile -File ./tests/site-assets.tests.ps1
 ```
+
+`sitemap.xml` is a generated deployment artifact and is not committed. Sitemap tests generate it twice in a temporary location, validate its full contents, and verify byte-for-byte idempotency. Pages artifact preparation generates the production file directly from the checked-out Git history, so squash merges cannot leave a stale source copy behind.
+
+## Adding an indexable page
+
+Add the HTML file outside service, test, build, fixture, asset, hidden, `internal`, and `dev` directories. The page must:
+
+- use one absolute HTTPS canonical on `wdt.digital` that matches its published path;
+- avoid restrictive `noindex`, `nofollow`, or `none` robots directives;
+- include the existing title, description, H1, Open Graph, Twitter, icon, navigation, and local-reference conventions;
+- have an incoming internal link from another indexable page.
+
+Root `index.html` maps to `https://wdt.digital/`; a directory `index.html` maps to a trailing-slash URL; other HTML filenames remain in the canonical URL. `404.html` and pages with `noindex` are never included in the sitemap.
+
+Every sitemap `lastmod` is the W3C timestamp from the latest Git author commit for its HTML file. New pages therefore need Git history before sitemap validation. Running the generator twice for the same repository state must produce identical bytes; no generated sitemap file is added to the commit.
 
 To preview the site locally:
 
