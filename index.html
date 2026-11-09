@@ -63,9 +63,9 @@
         },
         "license": "https://opensource.org/license/mit",
         "codeRepository": "https://github.com/0x0bug/windows-diagnostics-toolkit",
-        "softwareVersion": "0.1.0-beta",
-        "downloadUrl": "https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.1.0-beta/windows-diagnostics-toolkit-v0.1.0-beta.zip",
-        "releaseNotes": "https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta",
+        "softwareVersion": "0.2.0-beta.1",
+        "downloadUrl": "https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.1/windows-diagnostics-toolkit-v0.2.0-beta.1.zip",
+        "releaseNotes": "https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.1",
         "author": {
           "@type": "Person",
           "name": "0x0bug",
@@ -278,15 +278,15 @@
 
   <div class="band">
     <section class="sec" id="quick-start">
-      <div class="sec-hd"><span class="kicker">Quick start</span><span class="kicker-meta">v0.1.0-beta</span></div>
+      <div class="sec-hd"><span class="kicker">Quick start</span><span class="kicker-meta">v0.2.0-beta.1</span></div>
       <h2>Run WDT.</h2>
       <div class="run-methods">
         <article class="panel run-method">
           <div class="panel-hd"><span class="ttl">Verified release</span><span class="end">RECOMMENDED / MANAGED SYSTEMS</span></div>
           <div class="run-method-body">
             <p>Download the tagged release archive and checksum from GitHub, verify SHA-256 and inspect the extracted files before execution.</p>
-            <p class="release-links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.1.0-beta/windows-diagnostics-toolkit-v0.1.0-beta.zip">Download ZIP</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.1.0-beta/windows-diagnostics-toolkit-v0.1.0-beta.zip.sha256">Download checksum</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta">Release page</a></p>
-            <p class="hash-value"><span class="wtag" data-k="ok">SHA-256</span> ee741a450fa20b0903adec858af446806cba74666fde0f98b1bde85dc0188e0f</p>
+            <p class="release-links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.1/windows-diagnostics-toolkit-v0.2.0-beta.1.zip">Download ZIP</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.1/windows-diagnostics-toolkit-v0.2.0-beta.1.zip.sha256">Download checksum</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.1">Release page</a></p>
+            <p class="hash-value"><span class="wtag" data-k="ok">SHA-256</span> 830bd4e3cf94c101fc320eb6aaf899f46963f9ca6b06f6596f8d57fcf9af5211</p>
             <p class="panel-ft">Release ZIP verified before extraction</p>
           </div>
         </article>
@@ -306,8 +306,8 @@
         <details><summary>Clone for development</summary><pre class="mono-block"><span class="p">PS&gt;</span> git clone https://github.com/0x0bug/windows-diagnostics-toolkit.git
 <span class="p">PS&gt;</span> cd windows-diagnostics-toolkit
 <span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1</pre></details>
-        <details><summary>Release integrity</summary><pre class="mono-block"><span class="p">PS&gt;</span> $expected = 'ee741a450fa20b0903adec858af446806cba74666fde0f98b1bde85dc0188e0f'
-<span class="p">PS&gt;</span> (Get-FileHash .\windows-diagnostics-toolkit-v0.1.0-beta.zip -Algorithm SHA256).Hash.ToLowerInvariant() -eq $expected</pre><p>The tagged release binds the archive to a published version. SHA-256 detects whether the downloaded ZIP differs from the expected bytes; it does not establish who produced the file. The ZIP checksum does not authenticate bootstrap code already passed to <code>iex</code>.</p></details>
+        <details><summary>Release integrity</summary><pre class="mono-block"><span class="p">PS&gt;</span> $expected = '830bd4e3cf94c101fc320eb6aaf899f46963f9ca6b06f6596f8d57fcf9af5211'
+<span class="p">PS&gt;</span> (Get-FileHash .\windows-diagnostics-toolkit-v0.2.0-beta.1.zip -Algorithm SHA256).Hash.ToLowerInvariant() -eq $expected</pre><p>The tagged release binds the archive to a published version. SHA-256 detects whether the downloaded ZIP differs from the expected bytes; it does not establish who produced the file. The ZIP checksum does not authenticate bootstrap code already passed to <code>iex</code>.</p></details>
       </div>
     </section>
   </div>
@@ -395,7 +395,7 @@ DeviceId     : <span class="now">&lt;ID-1&gt;</span></pre></div>
 
   <section class="sec trust-block" aria-labelledby="trust-title">
     <div><span class="kicker">Project review</span><h2 id="trust-title">Open source and reviewable</h2><p>WDT is maintained by 0x0bug as an open-source Windows diagnostics project. Review the source, tests, security policy and release history before using it in a managed environment.</p></div>
-    <nav class="trust-links" aria-label="Project review links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit">Source</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.1.0-beta">Releases</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/actions">CI</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/SECURITY.md">Security</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/issues/new/choose">Issues</a></nav>
+    <nav class="trust-links" aria-label="Project review links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit">Source</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.1">Releases</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/actions">CI</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/SECURITY.md">Security</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/issues/new/choose">Issues</a></nav>
   </section>
 
   <section class="sec">
