@@ -254,16 +254,16 @@ try {
     $indexHtml = Get-Content -LiteralPath (Join-Path $repositoryRoot 'index.html') -Raw
     $siteJavaScript = Get-Content -LiteralPath (Join-Path $repositoryRoot 'assets\site.js') -Raw
     $bootstrapCommand = 'irm https://wdt.digital/run.ps1 | iex'
-    $releaseUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.1'
-    $zipUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.1/windows-diagnostics-toolkit-v0.2.0-beta.1.zip'
-    $checksumUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.1/windows-diagnostics-toolkit-v0.2.0-beta.1.zip.sha256'
-    $zipSha256 = '830bd4e3cf94c101fc320eb6aaf899f46963f9ca6b06f6596f8d57fcf9af5211'
+    $releaseUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.2'
+    $zipUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.2/windows-diagnostics-toolkit-v0.2.0-beta.2.zip'
+    $checksumUrl = 'https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.2/windows-diagnostics-toolkit-v0.2.0-beta.2.zip.sha256'
+    $zipSha256 = 'c04b488986d6c1e1575459919332c7dcfcc9a7fc22f35c49b56592838014fd2e'
     $homeJsonLdMatch = [regex]::Match($indexHtml, '(?is)<script\s+[^>]*type=["'']application/ld\+json["''][^>]*>(.*?)</script>')
     Assert-True $homeJsonLdMatch.Success 'Home page is missing JSON-LD.'
     $homeStructuredData = $homeJsonLdMatch.Groups[1].Value | ConvertFrom-Json
     $softwareApplication = @($homeStructuredData.'@graph' | Where-Object { $_.'@type' -ceq 'SoftwareApplication' })
     Assert-True ($softwareApplication.Count -eq 1) 'Home JSON-LD must contain exactly one SoftwareApplication.'
-    Assert-True ($softwareApplication[0].softwareVersion -ceq '0.2.0-beta.1') 'SoftwareApplication softwareVersion is incorrect.'
+    Assert-True ($softwareApplication[0].softwareVersion -ceq '0.2.0-beta.2') 'SoftwareApplication softwareVersion is incorrect.'
     Assert-True ($softwareApplication[0].downloadUrl -ceq $zipUrl) 'SoftwareApplication downloadUrl is incorrect.'
     Assert-True ($softwareApplication[0].releaseNotes -ceq $releaseUrl) 'SoftwareApplication releaseNotes is incorrect.'
     foreach ($feature in @('Selective module collection', 'Command-line automation', 'Findings summary', 'Local TXT and Markdown reports', 'Privacy Mode', 'Windows PowerShell 5.1 and PowerShell 7+', 'No agent or third-party dependencies')) {

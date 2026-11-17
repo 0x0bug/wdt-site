@@ -63,9 +63,9 @@
         },
         "license": "https://opensource.org/license/mit",
         "codeRepository": "https://github.com/0x0bug/windows-diagnostics-toolkit",
-        "softwareVersion": "0.2.0-beta.1",
-        "downloadUrl": "https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.1/windows-diagnostics-toolkit-v0.2.0-beta.1.zip",
-        "releaseNotes": "https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.1",
+        "softwareVersion": "0.2.0-beta.2",
+        "downloadUrl": "https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.2/windows-diagnostics-toolkit-v0.2.0-beta.2.zip",
+        "releaseNotes": "https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.2",
         "author": {
           "@type": "Person",
           "name": "0x0bug",
@@ -181,10 +181,10 @@
         <p class="hrow" style="margin: 0 0 var(--s3);"><span class="p" style="color: var(--accent);">PS&gt;</span><span class="dt">.\Invoke-WindowsDiagnostics.ps1 -All -PrivacyMode</span></p>
         <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="warn">[WARN]</span><span class="nm">Security</span><span class="dt">BitLocker volume not protected</span></p>
         <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="warn">[WARN]</span><span class="nm">Time</span><span class="dt">Local clock source reported</span></p>
-        <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="warn">[WARN]</span><span class="nm">Services</span><span class="dt">One or more services need attention</span></p>
+        <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="warn">[WARN]</span><span class="nm">Services</span><span class="dt">Service reported exit code 1067</span></p>
         <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="ok">[OK]</span><span class="nm">Network</span><span class="dt">No findings</span></p>
         <p class="hrow" data-seq="wait" style="margin: var(--s3) 0 0;"><span class="wtag" data-k="dim">--</span><span class="dt">0 errors · 3 warnings · 7 OK modules</span></p>
-        <p class="hrow" data-seq="wait" style="margin: 0; --i: 1;"><span class="wtag" data-k="dim">&gt;</span><span class="dt">.\WindowsDiagnosticsReport-20260712-101530.txt</span></p>
+        <p class="hrow" data-seq="wait" style="margin: 0; --i: 1;"><span class="wtag" data-k="dim">&gt;</span><span class="dt">.\WindowsDiagnosticsReport-20260712-101530-0123456789abcdef0123456789abcdef.txt</span></p>
       </div>
       <p class="panel-ft">Findings summary appears before detailed evidence.</p>
     </div>
@@ -256,7 +256,7 @@
         </div>
       </div>
       <p class="tui-hints"><span>↑ ↓ navigate · Space / Enter toggle</span><span>A all · R recommended · Enter on Run</span></p>
-      <p class="severity-line"><span class="wtag" data-k="ok">OK</span> — normal · <span class="wtag" data-k="warn">WARN</span> — review recommended · <span class="wtag" data-k="err">ERROR</span> — collection failed or Windows reported a fault</p>
+      <p class="severity-line"><span class="wtag" data-k="ok">OK</span> — no findings · <span class="wtag" data-k="warn">WARN</span> — review recommended · <span class="wtag" data-k="err">ERROR</span> — serious finding or execution failure</p>
       <details class="screenshot-details">
         <summary>View real terminal screenshots</summary>
         <div class="real-shots">
@@ -272,21 +272,21 @@
     <p class="lede">Run the same collection without the interactive interface, select only the required modules and write reports to a predictable location.</p>
     <pre class="mono-block"><span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1 -All -PrivacyMode -ExportMarkdown
 <span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1 -Module System,Network -OutputDirectory .\Reports</pre>
-    <p class="prose">No installer, no agent and no third-party modules. Administrator rights are optional. Findings do not change the exit code; a non-zero exit code indicates an execution failure.</p>
+    <p class="prose">No installer, no agent and no third-party modules. Administrator rights are optional. Findings do not change the exit code; a non-zero exit code indicates an execution, output I/O, or requested structured-data failure.</p>
     <p class="note"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/usage.md">View command-line usage →</a></p>
   </section>
 
   <div class="band">
     <section class="sec" id="quick-start">
-      <div class="sec-hd"><span class="kicker">Quick start</span><span class="kicker-meta">v0.2.0-beta.1</span></div>
+      <div class="sec-hd"><span class="kicker">Quick start</span><span class="kicker-meta">v0.2.0-beta.2</span></div>
       <h2>Run WDT.</h2>
       <div class="run-methods">
         <article class="panel run-method">
           <div class="panel-hd"><span class="ttl">Verified release</span><span class="end">RECOMMENDED / MANAGED SYSTEMS</span></div>
           <div class="run-method-body">
             <p>Download the tagged release archive and checksum from GitHub, verify SHA-256 and inspect the extracted files before execution.</p>
-            <p class="release-links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.1/windows-diagnostics-toolkit-v0.2.0-beta.1.zip">Download ZIP</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.1/windows-diagnostics-toolkit-v0.2.0-beta.1.zip.sha256">Download checksum</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.1">Release page</a></p>
-            <p class="hash-value"><span class="wtag" data-k="ok">SHA-256</span> 830bd4e3cf94c101fc320eb6aaf899f46963f9ca6b06f6596f8d57fcf9af5211</p>
+            <p class="release-links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.2/windows-diagnostics-toolkit-v0.2.0-beta.2.zip">Download ZIP</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.2/windows-diagnostics-toolkit-v0.2.0-beta.2.zip.sha256">Download checksum</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.2">Release page</a></p>
+            <p class="hash-value"><span class="wtag" data-k="ok">SHA-256</span> c04b488986d6c1e1575459919332c7dcfcc9a7fc22f35c49b56592838014fd2e</p>
             <p class="panel-ft">Release ZIP verified before extraction</p>
           </div>
         </article>
@@ -306,8 +306,8 @@
         <details><summary>Clone for development</summary><pre class="mono-block"><span class="p">PS&gt;</span> git clone https://github.com/0x0bug/windows-diagnostics-toolkit.git
 <span class="p">PS&gt;</span> cd windows-diagnostics-toolkit
 <span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1</pre></details>
-        <details><summary>Release integrity</summary><pre class="mono-block"><span class="p">PS&gt;</span> $expected = '830bd4e3cf94c101fc320eb6aaf899f46963f9ca6b06f6596f8d57fcf9af5211'
-<span class="p">PS&gt;</span> (Get-FileHash .\windows-diagnostics-toolkit-v0.2.0-beta.1.zip -Algorithm SHA256).Hash.ToLowerInvariant() -eq $expected</pre><p>The tagged release binds the archive to a published version. SHA-256 detects whether the downloaded ZIP differs from the expected bytes; it does not establish who produced the file. The ZIP checksum does not authenticate bootstrap code already passed to <code>iex</code>.</p></details>
+        <details><summary>Release integrity</summary><pre class="mono-block"><span class="p">PS&gt;</span> $expected = 'c04b488986d6c1e1575459919332c7dcfcc9a7fc22f35c49b56592838014fd2e'
+<span class="p">PS&gt;</span> (Get-FileHash .\windows-diagnostics-toolkit-v0.2.0-beta.2.zip -Algorithm SHA256).Hash.ToLowerInvariant() -eq $expected</pre><p>The tagged release binds the archive to a published version. SHA-256 detects whether the downloaded ZIP differs from the expected bytes; it does not establish who produced the file. The ZIP checksum does not authenticate bootstrap code already passed to <code>iex</code>.</p></details>
       </div>
     </section>
   </div>
@@ -331,7 +331,7 @@
     <div><span class="kicker">Signal rules</span><h2 id="findings-title">Findings, not a log dump.</h2><p class="lede">Every report opens with a findings summary. Severity is based on documented signal rules rather than the raw Windows event level alone.</p><p class="note"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/usage.md#findings-and-exit-codes">How findings are classified →</a></p></div>
     <ul class="list findings-list">
       <li>A single Critical or Error event does not create a finding on its own.</li>
-      <li>ERROR is reserved for repeated recent BugChecks.</li>
+      <li>ERROR marks serious findings such as critically low memory or repeated recent BugChecks; execution failures are reported separately.</li>
       <li>Auto + Stopped alone is Indeterminate — trigger-start services idle normally.</li>
       <li>Repeated evidence is grouped with counts and first/last timestamps.</li>
     </ul>
@@ -395,7 +395,7 @@ DeviceId     : <span class="now">&lt;ID-1&gt;</span></pre></div>
 
   <section class="sec trust-block" aria-labelledby="trust-title">
     <div><span class="kicker">Project review</span><h2 id="trust-title">Open source and reviewable</h2><p>WDT is maintained by 0x0bug as an open-source Windows diagnostics project. Review the source, tests, security policy and release history before using it in a managed environment.</p></div>
-    <nav class="trust-links" aria-label="Project review links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit">Source</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.1">Releases</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/actions">CI</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/SECURITY.md">Security</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/issues/new/choose">Issues</a></nav>
+    <nav class="trust-links" aria-label="Project review links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit">Source</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.2">Releases</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/actions">CI</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/SECURITY.md">Security</a><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/issues/new/choose">Issues</a></nav>
   </section>
 
   <section class="sec">

@@ -31,6 +31,12 @@ pwsh -NoProfile -File ./tests/site-assets.tests.ps1
 
 `sitemap.xml` is a generated deployment artifact and is not committed. Sitemap tests generate it twice in a temporary location, validate its full contents, and verify byte-for-byte idempotency. Pages artifact preparation generates the production file directly from the checked-out Git history, so squash merges cannot leave a stale source copy behind.
 
+The production monitor runs after each successful website deployment from a push
+to `main`, as well as on its daily schedule and manual dispatch. It checks HTTPS
+availability, public metadata and exact production bootstrap bytes against WDT
+`main`. Update release links, the ZIP checksum and the synchronized bootstrap only
+after the corresponding WDT release assets have been published.
+
 ## Adding an indexable page
 
 Add the HTML file outside service, test, build, fixture, asset, hidden, `internal`, and `dev` directories. The page must:
