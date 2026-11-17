@@ -2,10 +2,6 @@ name: Monitor production website
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ['Deploy project website']
-    types: [completed]
-    branches: [main]
   schedule:
     - cron: '43 4 * * *'
 
@@ -14,7 +10,6 @@ permissions:
 
 jobs:
   smoke:
-    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
 
     steps:
