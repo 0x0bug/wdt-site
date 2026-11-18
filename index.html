@@ -139,7 +139,7 @@
 <body class="landing">
 <a class="skip-link" href="#main-content">Skip to content</a>
 <p class="sr-only" id="site-status" role="status" aria-live="polite" aria-atomic="true"></p>
-<header class="hdr" data-open="false">
+<header class="hdr" data-open="0">
   <div class="hdr-in">
     <a class="brand" href="./" aria-label="Windows Diagnostics Toolkit home">
       <span class="brand-mark">WDT</span>
@@ -149,56 +149,86 @@
     <nav class="wnav" id="site-nav" aria-label="Primary navigation">
       <a href="#try">Demo</a>
       <a href="#checks">Diagnostics</a>
-      <a href="#privacy">Privacy</a>
       <a href="#guides">Guides</a>
-      <a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub ↗</a>
+      <a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub <span class="link-arrow" aria-hidden="true">↗</span></a>
       <a class="wbtn wbtn--primary nav-run" href="#quick-start">Run diagnostics</a>
     </nav>
   </div>
 </header>
 <main id="main-content">
-  <section class="sec hero" id="wdt-hero" data-inview="1">
-    <div>
-      <p class="promptline" data-seq="wait"><span class="p">PS C:\WDT&gt;</span> .\Invoke-WindowsDiagnostics.ps1<span class="caret" id="wdt-caret" data-run="0"></span></p>
-      <h1 class="h-display">
-        <span data-seq="wait" style="display: block;">One read-only pass.</span>
-        <span data-seq="wait" style="display: block; color: var(--accent);">One diagnostic report.</span>
-      </h1>
-      <p class="lede" data-seq="wait">Collect the Windows state and recent failure context needed for initial troubleshooting across system, performance, network, security, storage, services and updates.</p>
-      <p class="prose" data-seq="wait" style="--i: 1;">Built for system administrators and support engineers who need consistent evidence before changing the system.</p>
-      <div class="hero-actions" data-seq="wait">
-        <a class="wbtn wbtn--primary" href="#quick-start">Run diagnostics</a>
-        <p class="hero-links"><a href="sample-report/">View a sample report</a> <span aria-hidden="true">·</span> <a href="https://github.com/0x0bug/windows-diagnostics-toolkit">Review the source</a></p>
+  <div class="hero-shell">
+    <section class="sec hero" id="wdt-hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <a class="release-badge" href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.3">v0.2.0-beta.3 <span>Release notes <span class="link-arrow" aria-hidden="true">↗</span></span></a>
+        <h1 class="h-display" id="hero-title">Windows diagnostics <span>in one report.</span></h1>
+        <p class="lede">Collect system health, network settings and recent failures in one read-only pass. Review the findings or attach the relevant evidence to a support ticket.</p>
+        <div class="hero-actions">
+          <a class="wbtn wbtn--primary" href="#quick-start">Run diagnostics <span aria-hidden="true">↓</span></a>
+          <a class="wbtn" href="sample-report/">View sample report <span class="link-arrow" aria-hidden="true">↗</span></a>
+        </div>
+        <ul class="trust-line" aria-label="Platform and report storage">
+          <li>Windows 10 / 11</li>
+          <li>PowerShell 5.1 / 7+</li>
+          <li>Reports stored locally</li>
+        </ul>
       </div>
-      <p class="trust-line" data-seq="wait">READ-ONLY · LOCAL REPORTS · NO AGENT · PS 5.1 / 7+ · WINDOWS 10 / 11</p>
-    </div>
-    <div class="panel" data-seq="wait">
-      <div class="panel-hd">
-        <span class="ttl">Report excerpt</span>
-        <span class="end">SAMPLE DATA</span>
+      <figure class="panel hero-report">
+        <div class="panel-hd">
+          <span class="ttl"><span class="terminal-mark" aria-hidden="true">&gt;_</span> Findings summary</span>
+          <span class="end">Sample report</span>
+        </div>
+        <div class="hero-command"><span class="p" aria-hidden="true">PS&gt;</span> <code>.\Invoke-WindowsDiagnostics.ps1 -All -PrivacyMode</code></div>
+        <ul class="report-findings">
+          <li><span class="wtag" data-k="warn">[WARN]</span><div><strong>Security</strong><p>BitLocker volume not protected</p></div></li>
+          <li><span class="wtag" data-k="warn">[WARN]</span><div><strong>Time</strong><p>Local clock source reported</p></div></li>
+          <li><span class="wtag" data-k="warn">[WARN]</span><div><strong>Services</strong><p>Service reported exit code 1067</p></div></li>
+          <li><span class="wtag" data-k="ok">[OK]</span><div><strong>Network</strong><p>No findings</p></div></li>
+        </ul>
+        <figcaption class="panel-ft">0 errors <span class="wtag" data-k="warn">3 warnings</span> <span class="wtag" data-k="ok">7 OK modules</span></figcaption>
+      </figure>
+    </section>
+  </div>
+
+  <div class="band start-band">
+    <section class="sec" id="quick-start" aria-labelledby="start-title">
+      <h2 id="start-title">Get started</h2>
+      <div class="run-methods">
+        <article class="panel run-method run-method--release">
+          <div class="panel-hd"><h3 class="ttl">Release ZIP</h3><span class="end">Recommended</span></div>
+          <div class="run-method-body">
+            <p>Verify the archive with its SHA-256 checksum, then extract it and run <code>Invoke-WindowsDiagnostics.ps1</code>.</p>
+            <div class="release-links"><a class="wbtn wbtn--primary" href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.3/windows-diagnostics-toolkit-v0.2.0-beta.3.zip">Download ZIP <span aria-hidden="true">↓</span></a> <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.3/windows-diagnostics-toolkit-v0.2.0-beta.3.zip.sha256">SHA-256 file <span aria-hidden="true">↓</span></a></div>
+            <p class="hash-value"><span class="wtag" data-k="ok">SHA-256</span> 3d8072b9d855699790e11239806be7fe4c1da21fd0ef9e907b4558802c339f16</p>
+          </div>
+        </article>
+        <article class="panel run-method">
+          <div class="panel-hd"><h3 class="ttl">Run from PowerShell</h3></div>
+          <div class="run-method-body">
+            <div class="command-bar">
+              <pre class="mono-block" id="quick-command"><span class="p">PS&gt;</span> irm https://wdt.digital/run.ps1 | iex</pre>
+              <button type="button" class="wbtn wbtn--mini" data-copy-target="quick-command" data-copy-status="site-status" aria-label="Copy the bootstrap command">Copy</button>
+            </div>
+            <p class="warning-note"><span class="wtag" data-k="warn">[!]</span> This command runs <code>run.ps1</code> from wdt.digital. Inspect the script first on managed or sensitive systems.</p>
+          </div>
+        </article>
       </div>
-      <div class="mono-block">
-        <p class="hrow" style="margin: 0 0 var(--s3);"><span class="p" style="color: var(--accent);">PS&gt;</span><span class="dt">.\Invoke-WindowsDiagnostics.ps1 -All -PrivacyMode</span></p>
-        <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="warn">[WARN]</span><span class="nm">Security</span><span class="dt">BitLocker volume not protected</span></p>
-        <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="warn">[WARN]</span><span class="nm">Time</span><span class="dt">Local clock source reported</span></p>
-        <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="warn">[WARN]</span><span class="nm">Services</span><span class="dt">Service reported exit code 1067</span></p>
-        <p class="hrow" data-seq="wait" style="margin: 0;"><span class="wtag" data-k="ok">[OK]</span><span class="nm">Network</span><span class="dt">No findings</span></p>
-        <p class="hrow" data-seq="wait" style="margin: var(--s3) 0 0;"><span class="wtag" data-k="dim">--</span><span class="dt">0 errors · 3 warnings · 7 OK modules</span></p>
-        <p class="hrow" data-seq="wait" style="margin: 0; --i: 1;"><span class="wtag" data-k="dim">&gt;</span><span class="dt">.\WindowsDiagnosticsReport-20260712-101530-0123456789abcdef0123456789abcdef.txt</span></p>
+      <div class="run-details">
+        <details><summary>Inspect the bootstrap</summary><pre class="mono-block"><span class="p">PS&gt;</span> irm https://wdt.digital/run.ps1 -OutFile .\wdt-run.ps1
+<span class="p">PS&gt;</span> notepad .\wdt-run.ps1
+<span class="p">PS&gt;</span> .\wdt-run.ps1</pre></details>
+        <details><summary>Clone for development</summary><pre class="mono-block"><span class="p">PS&gt;</span> git clone https://github.com/0x0bug/windows-diagnostics-toolkit.git
+<span class="p">PS&gt;</span> cd windows-diagnostics-toolkit
+<span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1</pre></details>
+        <details><summary>Release integrity</summary><pre class="mono-block"><span class="p">PS&gt;</span> $expected = '3d8072b9d855699790e11239806be7fe4c1da21fd0ef9e907b4558802c339f16'
+<span class="p">PS&gt;</span> (Get-FileHash .\windows-diagnostics-toolkit-v0.2.0-beta.3.zip -Algorithm SHA256).Hash.ToLowerInvariant() -eq $expected</pre><p>The tagged release binds the archive to a published version. SHA-256 detects whether the downloaded ZIP differs from the expected bytes; it does not establish who produced the file. The ZIP checksum does not authenticate bootstrap code already passed to <code>iex</code>.</p></details>
       </div>
-      <p class="panel-ft">Findings summary appears before detailed evidence.</p>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <div class="band" id="try">
     <section class="sec">
-      <div class="sec-hd">
-        <span class="kicker">Interactive demo</span>
-        <span class="kicker-meta">Browser simulation</span>
-      </div>
-      <h2>Select the diagnostic modules relevant to the incident.</h2>
-      <p class="lede">Preview the current WDT workflow and the structured output produced for a troubleshooting session. This simulation runs only in the browser.</p>
-      <p class="workflow-line">Select modules → Collect locally → Review one report</p>
+      <h2>Interactive demo</h2>
+      <p class="lede">Select modules and run a sample collection. This simulation runs only in the browser.</p>
       <noscript>
         <p class="note">The interactive demo requires JavaScript. View the <a href="assets/tui-wide-real.png">real screenshot</a> or <a href="sample-report/">sample report</a> instead.</p>
       </noscript>
@@ -267,68 +297,36 @@
     </section>
   </div>
 
-  <section class="sec" aria-labelledby="automation-title">
-    <h2 id="automation-title">Command line and automation</h2>
-    <p class="lede">Run the same collection without the interactive interface, select only the required modules and write reports to a predictable location.</p>
-    <pre class="mono-block"><span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1 -All -PrivacyMode -ExportMarkdown
+  <section class="sec automation" aria-labelledby="automation-title">
+    <div>
+      <h2 id="automation-title">Command line and automation</h2>
+      <p class="lede">Select modules, collect snapshots and write reports to a predictable location from PowerShell.</p>
+    </div>
+    <pre class="mono-block automation-command"><span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1 -All -PrivacyMode -ExportMarkdown
 <span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1 -Module System,Network -OutputDirectory .\Reports</pre>
-    <p class="prose">No installer, no agent and no third-party modules. Administrator rights are optional. Findings do not change the exit code; a non-zero exit code indicates an execution, output I/O, or requested structured-data failure.</p>
-    <p class="note"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/usage.md">View command-line usage →</a></p>
+    <nav class="automation-links" aria-label="Command-line documentation">
+      <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/usage.md">Command-line usage <span class="link-arrow" aria-hidden="true">↗</span></a>
+      <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/usage.md#structured-snapshots-and-offline-comparison">Compare JSON snapshots <span class="link-arrow" aria-hidden="true">↗</span></a>
+      <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/usage.md#incident-investigation-by-symptom-and-time">Investigate incidents by time <span class="link-arrow" aria-hidden="true">↗</span></a>
+    </nav>
   </section>
 
-  <div class="band">
-    <section class="sec" id="quick-start">
-      <div class="sec-hd"><span class="kicker">Quick start</span><span class="kicker-meta">v0.2.0-beta.3</span></div>
-      <h2>Run WDT.</h2>
-      <div class="run-methods">
-        <article class="panel run-method">
-          <div class="panel-hd"><span class="ttl">Verified release</span><span class="end">RECOMMENDED / MANAGED SYSTEMS</span></div>
-          <div class="run-method-body">
-            <p>Download the tagged release archive and checksum from GitHub, verify SHA-256 and inspect the extracted files before execution.</p>
-            <p class="release-links"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.3/windows-diagnostics-toolkit-v0.2.0-beta.3.zip">Download ZIP</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/download/v0.2.0-beta.3/windows-diagnostics-toolkit-v0.2.0-beta.3.zip.sha256">Download checksum</a> · <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/releases/tag/v0.2.0-beta.3">Release page</a></p>
-            <p class="hash-value"><span class="wtag" data-k="ok">SHA-256</span> 3d8072b9d855699790e11239806be7fe4c1da21fd0ef9e907b4558802c339f16</p>
-            <p class="panel-ft">Release ZIP verified before extraction</p>
-          </div>
-        </article>
-        <article class="panel run-method">
-          <div class="panel-hd"><span class="ttl">One-line bootstrap</span><span class="end">GITHUB PAGES</span></div>
-          <div class="run-method-body">
-            <div class="copy-row"><span>PowerShell</span><button type="button" class="wbtn wbtn--mini" data-copy-target="quick-command" data-copy-status="site-status" aria-label="Copy the bootstrap command">COPY</button></div>
-            <pre class="mono-block" id="quick-command"><span class="p">PS&gt;</span> irm https://wdt.digital/run.ps1 | iex</pre>
-            <p class="warning-note"><span class="wtag" data-k="warn">[!]</span> Requires trust in run.ps1 served through GitHub Pages. Inspect it first on managed or sensitive systems.</p>
-          </div>
-        </article>
-      </div>
-      <div class="run-details">
-        <details><summary>Inspect the bootstrap</summary><pre class="mono-block"><span class="p">PS&gt;</span> irm https://wdt.digital/run.ps1 -OutFile .\wdt-run.ps1
-<span class="p">PS&gt;</span> notepad .\wdt-run.ps1
-<span class="p">PS&gt;</span> .\wdt-run.ps1</pre></details>
-        <details><summary>Clone for development</summary><pre class="mono-block"><span class="p">PS&gt;</span> git clone https://github.com/0x0bug/windows-diagnostics-toolkit.git
-<span class="p">PS&gt;</span> cd windows-diagnostics-toolkit
-<span class="p">PS&gt;</span> .\Invoke-WindowsDiagnostics.ps1</pre></details>
-        <details><summary>Release integrity</summary><pre class="mono-block"><span class="p">PS&gt;</span> $expected = '3d8072b9d855699790e11239806be7fe4c1da21fd0ef9e907b4558802c339f16'
-<span class="p">PS&gt;</span> (Get-FileHash .\windows-diagnostics-toolkit-v0.2.0-beta.3.zip -Algorithm SHA256).Hash.ToLowerInvariant() -eq $expected</pre><p>The tagged release binds the archive to a published version. SHA-256 detects whether the downloaded ZIP differs from the expected bytes; it does not establish who produced the file. The ZIP checksum does not authenticate bootstrap code already passed to <code>iex</code>.</p></details>
-      </div>
-    </section>
-  </div>
-
   <section class="sec" id="checks">
-    <div class="sec-hd"><span class="kicker">Diagnostics</span><span class="kicker-meta">10 selectors / 8 groups</span></div>
-    <h2>Select diagnostic scope.</h2>
+    <h2>What WDT checks</h2>
     <div class="diagnostic-grid">
-      <article class="diagnostic-card"><h3>System</h3><p class="module-selector"><code>-Module System</code></p><p>Windows version and build, hardware, uptime and core system context.</p><p class="purpose">Establish the machine baseline before deeper analysis.</p></article>
-      <article class="diagnostic-card"><h3>Performance</h3><p class="module-selector"><code>-Module Performance</code></p><p>CPU, memory, pagefile, pressure indicators and top processes.</p><p class="purpose">Identify current resource pressure.</p></article>
-      <article class="diagnostic-card"><h3>Network</h3><p class="module-selector"><code>-Module Network</code></p><p>Adapters, IP, DNS, DHCP, routes, gateways, proxy and reachability.</p><p class="purpose">Verify the actual traffic path and configuration.</p></article>
-      <article class="diagnostic-card"><h3>Security</h3><p class="module-selector"><code>-Module Security</code></p><p>Defender, Firewall, Secure Boot, TPM and BitLocker.</p><p class="purpose">Confirm the observable state of Windows protections.</p></article>
-      <article class="diagnostic-card"><h3>Storage</h3><p class="module-selector"><code>-Module Disk</code></p><p>Physical disks, volumes, free space and warning thresholds.</p><p class="purpose">Detect capacity pressure and relevant storage state.</p></article>
-      <article class="diagnostic-card"><h3>Failures</h3><p class="module-selector"><code>-Module Crashes,Events</code></p><p>Crashes, hangs, BugChecks, Event Log evidence and dump metadata.</p><p class="purpose">Collect recent failure evidence from multiple sources.</p></article>
-      <article class="diagnostic-card"><h3>Services and startup</h3><p class="module-selector"><code>-Module Services</code></p><p>Services, startup entries and scheduled tasks.</p><p class="purpose">Review execution and startup state.</p></article>
-      <article class="diagnostic-card"><h3>Updates and time</h3><p class="module-selector"><code>-Module Updates,Time</code></p><p>Updates, pending reboot indicators and Windows Time state.</p><p class="purpose">Detect conditions affecting deployment, authentication or behaviour.</p></article>
+      <article class="diagnostic-card"><h3>System</h3><p class="module-selector"><code>-Module System</code></p><p>Windows version and build, hardware, uptime and core system context.</p></article>
+      <article class="diagnostic-card"><h3>Performance</h3><p class="module-selector"><code>-Module Performance</code></p><p>CPU, memory, pagefile, pressure indicators and top processes.</p></article>
+      <article class="diagnostic-card"><h3>Network</h3><p class="module-selector"><code>-Module Network</code></p><p>Adapters, IP, DNS, DHCP, routes, gateways, proxy and reachability.</p></article>
+      <article class="diagnostic-card"><h3>Security</h3><p class="module-selector"><code>-Module Security</code></p><p>Defender, Firewall, Secure Boot, TPM and BitLocker.</p></article>
+      <article class="diagnostic-card"><h3>Storage</h3><p class="module-selector"><code>-Module Disk</code></p><p>Physical disks, volumes, free space and warning thresholds.</p></article>
+      <article class="diagnostic-card"><h3>Failures</h3><p class="module-selector"><code>-Module Crashes,Events</code></p><p>Crashes, hangs, BugChecks, Event Log evidence and dump metadata.</p></article>
+      <article class="diagnostic-card"><h3>Services and startup</h3><p class="module-selector"><code>-Module Services</code></p><p>Services, startup entries and scheduled tasks.</p></article>
+      <article class="diagnostic-card"><h3>Updates and time</h3><p class="module-selector"><code>-Module Updates,Time</code></p><p>Updates, pending reboot indicators and Windows Time state.</p></article>
     </div>
   </section>
 
   <section class="sec findings" aria-labelledby="findings-title">
-    <div><span class="kicker">Signal rules</span><h2 id="findings-title">Findings, not a log dump.</h2><p class="lede">Every report opens with a findings summary. Severity is based on documented signal rules rather than the raw Windows event level alone.</p><p class="note"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/usage.md#findings-and-exit-codes">How findings are classified →</a></p></div>
+    <div><h2 id="findings-title">How findings are classified</h2><p class="lede">Every report opens with a findings summary. Severity is based on documented signal rules rather than the raw Windows event level alone.</p><p class="note"><a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/usage.md#findings-and-exit-codes">How findings are classified →</a></p></div>
     <ul class="list findings-list">
       <li>A single Critical or Error event does not create a finding on its own.</li>
       <li>ERROR marks serious findings such as critically low memory or repeated recent BugChecks; execution failures are reported separately.</li>
@@ -368,21 +366,18 @@ DeviceId     : <span class="now">&lt;ID-1&gt;</span></pre></div>
   </div>
 
   <section class="sec" id="guides">
-    <div class="sec-hd"><span class="kicker">Guides</span><a class="kicker-meta" href="cases/">All troubleshooting guides ↗</a></div>
-    <h2>Incident guides.</h2>
+    <div class="sec-hd"><h2>Troubleshooting guides</h2><a href="cases/">Browse all 8 guides <span class="link-arrow" aria-hidden="true">↗</span></a></div>
     <div class="guide-grid">
       <article class="guide-card"><h3>Prepare a Windows diagnostic report for a support ticket.</h3><p>Collect consistent evidence and review Privacy Mode output before attaching it.</p><a href="cases/windows-diagnostic-report-for-tech-support.html">Open guide →</a></article>
       <article class="guide-card"><h3>Investigate high memory or CPU usage.</h3><p>Compare current pressure, pagefile state and the highest-impact processes.</p><a href="cases/windows-high-memory-usage.html">Open guide →</a></article>
       <article class="guide-card"><h3>Collect application crash and hang evidence.</h3><p>Review grouped Event Log, Reliability Monitor and dump metadata.</p><a href="cases/windows-application-crashes.html">Open guide →</a></article>
       <article class="guide-card"><h3>Verify network routes, DNS and proxy configuration.</h3><p>Compare adapters, routes, gateways, name resolution and proxy state.</p><a href="cases/windows-network-routes.html">Open guide →</a></article>
     </div>
-    <p class="note"><a href="cases/">View all troubleshooting guides</a></p>
   </section>
 
   <div class="band">
     <section class="sec" id="faq">
-      <span class="kicker">FAQ</span>
-      <h2>Operational details.</h2>
+      <h2>Frequently asked questions</h2>
       <div class="faq">
         <details><summary><span class="q">?</span>Do I need administrator rights?</summary><p>No for the standard collection. Some Windows sources expose less detail without elevation; WDT reports unavailable data and continues where possible.</p></details>
         <details><summary><span class="q">?</span>Does WDT change system configuration?</summary><p>No. Production diagnostics collect and report state without changing services, registry settings, firewall rules or network configuration.</p></details>
@@ -400,8 +395,7 @@ DeviceId     : <span class="now">&lt;ID-1&gt;</span></pre></div>
 
   <section class="sec">
     <div class="cta">
-      <h2>Collect the evidence before changing the system.</h2>
-      <p class="lede">Run a consistent Windows diagnostic collection and move directly to analysis.</p>
+      <h2>Ready to collect a report?</h2>
       <div class="row"><a class="wbtn wbtn--primary" href="#quick-start">Run diagnostics</a><a class="wbtn" href="https://github.com/0x0bug/windows-diagnostics-toolkit">View on GitHub</a></div>
     </div>
   </section>
