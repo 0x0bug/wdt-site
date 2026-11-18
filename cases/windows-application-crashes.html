@@ -61,7 +61,7 @@
   <nav class="hdr-in" aria-label="Primary navigation">
     <a class="brand" href="../" aria-label="Windows Diagnostics Toolkit home"><span class="brand-mark" aria-hidden="true">WDT</span><span class="brand-name">Windows Diagnostics Toolkit</span></a>
     <button class="wnav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">≡</button>
-    <div class="wnav" id="site-nav"><a href="../">Home</a><a href="./">Guides</a><a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub ↗</a></div>
+    <div class="wnav" id="site-nav"><a href="../">Home</a><a href="./">Guides</a><a class="gh" href="https://github.com/0x0bug/windows-diagnostics-toolkit">GitHub <span class="link-arrow" aria-hidden="true">↗</span></a></div>
   </nav>
 </header>
 <main id="main-content">
@@ -75,8 +75,9 @@
     <div class="toc"><strong>On this page</strong><ul><li><a href="#command">Command to run</a></li><li><a href="#evidence">Evidence collected</a></li><li><a href="#interpretation">How to interpret the report</a></li><li><a href="#limitations">Limits and next steps</a></li></ul></div>
 
     <h2 id="command">Run the crash and hang diagnostic</h2>
-    <div class="panel article-command"><div class="panel-hd"><span class="ttl">PowerShell</span><span class="end"><button type="button" class="wbtn wbtn--mini" data-copy-target="article-command" data-copy-status="article-copy-status" aria-label="Copy the PowerShell command">COPY</button></span></div><pre class="mono-block" id="article-command"><code>pwsh -NoProfile -File .\Invoke-WindowsDiagnostics.ps1 `
+    <div class="panel article-command"><div class="panel-hd"><span class="ttl">PowerShell 7</span><span class="end"><button type="button" class="wbtn wbtn--mini" data-copy-target="article-command" data-copy-status="article-copy-status" aria-label="Copy the PowerShell command">COPY</button></span></div><pre class="mono-block" id="article-command"><code>pwsh -NoProfile -File .\Invoke-WindowsDiagnostics.ps1 `
   -Crashes -PrivacyMode -ExportMarkdown</code></pre></div><span id="article-copy-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></span>
+    <p class="command-note"><a href="windows-diagnostic-report-for-tech-support.html#windows-powershell-51">Using Windows PowerShell 5.1?</a> Use the 5.1 launcher with the diagnostic options shown above.</p>
     <p>The command creates a local TXT report and an optional Markdown report. <code>-PrivacyMode</code> replaces common identifying values in the combined report, but the final file should still be reviewed before it is posted publicly.</p>
 
     <h2>When this guide is useful</h2>

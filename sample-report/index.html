@@ -40,17 +40,18 @@
     </a>
     <button type="button" class="wnav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">≡</button>
     <nav class="wnav" id="site-nav" aria-label="Primary navigation">
-      <a href="../">Back to WDT</a>
+      <a href="../">Home</a>
+      <a href="../cases/">Guides</a>
       <a class="wbtn wbtn--primary nav-run" href="../#quick-start">Run diagnostics</a>
     </nav>
   </div>
 </header>
 <main class="report-shell" id="report-content">
   <header class="report-header">
-    <p class="kicker"><a href="../">← Back to WDT</a></p>
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="../">Home</a></li><li><span aria-current="page">Sample report</span></li></ol></nav>
     <h1>Sample Windows diagnostic report</h1>
     <p class="lede">An anonymized demonstration of the structured TXT output produced by WDT. These values do not describe a real system.</p>
-    <p class="report-source-note">Source content: <a href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/report-example.md">docs/report-example.md</a>. Privacy Mode reduces common identifiers, but every generated report still requires review before sharing.</p>
+    <p class="report-source-note">Privacy Mode masks common identifiers. Review reports before sharing.</p>
   </header>
   <div class="report-toolbar">
     <span class="kicker">TXT report · demonstration data</span>
@@ -186,7 +187,7 @@ Exit code: 0
 Pending reboot : No
 Indicators found: None</pre>
   </article>
-  <p class="report-source-note">The source example notes that a real report includes complete output for every selected module. Always review the generated file before posting it publicly.</p>
+  <p class="report-source-note">Generated reports include execution status, collection completeness and any available module output.</p>
   <div class="actions"><a class="wbtn wbtn--primary" href="../#quick-start">Run diagnostics</a><a class="wbtn" href="https://github.com/0x0bug/windows-diagnostics-toolkit/blob/main/docs/report-example.md">View source example</a></div>
 </main>
 <footer class="foot"><div class="foot-in"><span class="name">Windows Diagnostics Toolkit</span><span>Demonstration data</span></div></footer>

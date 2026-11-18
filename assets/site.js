@@ -48,8 +48,16 @@
     });
 
     navLinks.addEventListener('click', (event) => {
-      if (event.target instanceof HTMLAnchorElement) {
-        closeNavigation();
+      const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+      if (!link || navToggle.getAttribute('aria-expanded') !== 'true') {
+        return;
+      }
+
+      closeNavigation();
+      if (link.getAttribute('href').startsWith('#')) {
+        const destination = document.getElementById(link.hash.slice(1));
+        destination?.setAttribute('tabindex', '-1');
+        destination?.focus({ preventScroll: true });
       }
     });
 
@@ -95,9 +103,13 @@
         closeNavigation();
       }
     });
+
+    header.setAttribute('data-nav-ready', '');
   }
 
   document.querySelectorAll('[data-copy-target]').forEach((button) => {
+    const originalLabel = button.textContent;
+    let feedbackTimer;
     button.addEventListener('click', async () => {
       const targetId = button.getAttribute('data-copy-target');
       const target = targetId ? document.getElementById(targetId) : null;
@@ -116,10 +128,10 @@
       try {
         await navigator.clipboard.writeText(text);
         announce(status, `${copyLabel} copied to the clipboard.`);
-        const originalLabel = button.textContent;
+        window.clearTimeout(feedbackTimer);
         button.textContent = 'COPIED';
         button.classList.add('is-copied');
-        window.setTimeout(() => {
+        feedbackTimer = window.setTimeout(() => {
           button.textContent = originalLabel;
           button.classList.remove('is-copied');
         }, 1800);
@@ -579,14 +591,6 @@
       }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
       revealTargets.forEach((element) => revealObserver.observe(element));
       document.documentElement.classList.add('wdt-motion');
-
-      const heroSequence = [...document.querySelectorAll('#wdt-hero [data-seq="wait"]')];
-      const sequenceStep = reducedMotion.matches ? 0 : 55;
-      heroSequence.forEach((element, index) => {
-        window.setTimeout(() => {
-          element.dataset.seq = 'in';
-        }, index * sequenceStep);
-      });
     } catch {
       document.documentElement.classList.remove('wdt-motion');
     }
